@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Interactivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div id="escenario-principal" class="static-area escenario-principal"><span>Escenario Principal</span></div>
+    <div id="escenario-gastronomico" class="static-area escenario-gastronomico"><span>Escenario Gastronómico</span></div>
+    <div id="sillas-mesas-1" class="static-area sillas-mesas"><span>Zona de Descanso</span></div>
+    <div id="sillas-mesas-2" class="static-area sillas-mesas"><span>Zona de Descanso</span></div>
+    <div id="sillas-mesas-3" class="static-area sillas-mesas"><span>Zona de Descanso</span></div>
+    <div id="sillas-mesas-4" class="static-area sillas-mesas"><span>Zona de Descanso</span></div>
+    <div id="sillas-mesas-5" class="static-area sillas-mesas"><span>Zona de Descanso</span></div>
+    <div id="entrada-derecha" class="static-area entrada-derecha"><span>Entrada</span></div>
+    <div id="entrada-inferior" class="static-area entrada-inferior"><span>Entrada</span></div>
+    
+    </div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <div class="modal-header">
+            <img id="modalFlag" src="" alt="Bandera" class="flag" style="display: none;">
+            <h2 id="modalTitle"></h2>
+        </div>
+        <ul id="modalMenu" class="menu-list"></ul>
+        <p id="modalInfo" class="info-text"></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

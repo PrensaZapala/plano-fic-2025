@@ -1,0 +1,274 @@
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.container {
+    position: relative;
+    width: 90vw;
+    max-width: 1000px;
+    aspect-ratio: 997.4 / 1190.6;
+    /* ! ATENCIÓN: Actualiza esta imagen con el nuevo plano que incluya las nuevas formas */
+    background-image: url('Plano-Stands-v2.jpg'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+.interactive-area {
+    position: absolute;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+.interactive-area:hover {
+    transform: scale(1.08) translateY(-2px);
+    opacity: 1;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+.stand {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(240, 240, 240, 0.8));
+    border: 2px solid rgba(0, 128, 0, 0.6);
+}
+.stand:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 245, 0.9));
+    border-color: rgba(0, 128, 0, 0.8);
+}
+.stand-flag {
+    width: 70%;
+    max-width: 30px;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2px;
+}
+.stand-name {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    line-height: 1.1;
+    padding: 0 2px;
+}
+
+/* Áreas estáticas (no interactivas) */
+.static-area {
+    position: absolute;
+    opacity: 0.6;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.static-area span {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    font-size: 0.9rem;
+}
+.estatica-titulo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+    padding: 2px;
+}
+
+/* Posiciones de las áreas interactivas (stands) */
+#stand-1 { top: 5.43%; left: 13.84%; width: 5.69%; height: 4.77%; }
+#stand-2 { top: 5.43%; left: 19.55%; width: 5.69%; height: 4.77%; }
+#stand-3 { top: 5.43%; left: 25.25%; width: 5.69%; height: 4.77%; }
+#stand-4 { top: 5.43%; left: 30.94%; width: 5.69%; height: 4.77%; }
+#stand-5 { top: 5.43%; left: 36.65%; width: 5.69%; height: 4.77%; }
+#stand-6 { top: 5.43%; left: 42.34%; width: 5.69%; height: 4.77%; }
+#stand-7 { top: 5.43%; left: 48.04%; width: 5.69%; height: 4.77%; }
+#stand-8 { top: 5.43%; left: 53.74%; width: 5.69%; height: 4.77%; }
+#stand-9 { top: 5.43%; left: 59.44%; width: 5.69%; height: 4.77%; }
+#stand-10 { top: 5.43%; left: 65.13%; width: 5.69%; height: 4.77%; }
+#stand-11 { top: 5.43%; left: 70.84%; width: 5.69%; height: 4.77%; }
+#stand-12 { top: 5.43%; left: 76.53%; width: 5.69%; height: 4.77%; }
+#stand-13 { top: 5.43%; left: 82.23%; width: 5.69%; height: 4.77%; }
+#stand-14 { top: 10.21%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-15 { top: 14.99%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-16 { top: 19.75%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-17 { top: 24.53%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-18 { top: 29.3%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-19 { top: 51.38%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-20 { top: 45.02%; left: 65.98%; width: 7.88%; height: 4.77%; }
+#stand-21 { top: 49.79%; left: 65.98%; width: 7.88%; height: 4.77%; }
+#stand-22 { top: 45.02%; left: 58.1%; width: 7.88%; height: 4.77%; }
+#stand-23 { top: 49.79%; left: 58.1%; width: 7.88%; height: 4.77%; }
+#stand-24 { top: 45.02%; left: 50.22%; width: 7.88%; height: 4.77%; }
+#stand-25 { top: 49.79%; left: 50.22%; width: 7.88%; height: 4.77%; }
+#stand-26 { top: 45.02%; left: 42.34%; width: 7.88%; height: 4.77%; }
+#stand-27 { top: 49.79%; left: 42.34%; width: 7.88%; height: 4.77%; }
+#stand-28 { top: 56.16%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-29 { top: 60.93%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-30 { top: 65.7%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-31 { top: 70.47%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-32 { top: 75.24%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-33 { top: 80.01%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-34 { top: 84.78%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-35 { top: 89.56%; left: 87.93%; width: 5.69%; height: 4.77%; }
+#stand-36 { top: 89.56%; left: 82.23%; width: 5.69%; height: 4.77%; }
+#stand-37 { top: 89.56%; left: 76.53%; width: 5.69%; height: 4.77%; }
+#stand-38 { top: 89.56%; left: 70.84%; width: 5.69%; height: 4.77%; }
+#stand-39 { top: 89.56%; left: 65.13%; width: 5.69%; height: 4.77%; }
+#stand-40 { top: 89.56%; left: 31.23%; width: 5.69%; height: 4.77%; }
+#stand-41 { top: 89.56%; left: 25.53%; width: 5.69%; height: 4.77%; }
+#stand-42 { top: 89.56%; left: 19.84%; width: 5.69%; height: 4.77%; }
+#stand-43 { top: 89.56%; left: 14.14%; width: 5.69%; height: 4.77%; }
+
+/* Posiciones de las nuevas áreas estáticas (no interactivas) */
+#escenario-principal { top: 14.98%; left: 2.71%; width: 8.81%; height: 21.90%; background-color: rgba(0, 0, 255, 0.4); }
+#escenario-gastronomico { top: 65.71%; left: 2.71%; width: 6.35%; height: 16.71%; background-color: rgba(255, 0, 255, 0.4); }
+#sillas-mesas-1 { top: 13.92%; left: 21.23%; width: 33.47%; height: 8.66%; background-color: rgba(0, 255, 255, 0.4); }
+#sillas-mesas-2 { top: 30.46%; left: 21.23%; width: 33.47%; height: 10.11%; background-color: rgba(0, 255, 255, 0.4); }
+#sillas-mesas-3 { top: 13.92%; left: 55.59%; width: 24.66%; height: 26.65%; background-color: rgba(0, 255, 255, 0.4); }
+#sillas-mesas-4 { top: 58.54%; left: 55.59%; width: 24.66%; height: 26.65%; background-color: rgba(0, 255, 255, 0.4); }
+#sillas-mesas-5 { top: 58.54%; left: 16.05%; width: 31.81%; height: 26.65%; background-color: rgba(0, 255, 255, 0.4); }
+#entrada-derecha { top: 35.51%; left: 87.93%; width: 12.07%; height: 14.44%; background-color: rgba(255, 0, 0, 0.4); }
+#entrada-inferior { top: 88.49%; left: 43.96%; width: 12.07%; height: 12.91%; transform: rotate(90deg); background-color: rgba(255, 255, 0, 0.4); }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.modal-content {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    transform: scale(0.9);
+    animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+@keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #666;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.close-btn:hover {
+    color: #333;
+    background-color: #f0f0f0;
+    transform: rotate(90deg);
+}
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+}
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+.flag {
+    width: 90px;
+    height: auto;
+    border-radius: 8px;
+    border: 3px solid #ddd;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.menu-list li {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+.menu-list li:hover {
+    background: linear-gradient(145deg, #e9ecef, #dee2e6);
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.menu-list a {
+    display: block;
+    padding: 18px 22px;
+    text-decoration: none;
+    color: #495057;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.info-text {
+    color: #495057;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0;
+}
+@media (max-width: 768px) {
+    .stand-name {
+        font-size: 0.5rem;
+    }
+    .area-name {
+        font-size: 0.6rem;
+    }
+    .stand-flag {
+        max-width: 20px;
+    }
+}
