@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plano Interactivo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano Interactivo</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="container">
-    
-
-    </div>
-
-<div id="infoModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <div class="modal-header">
-            <img id="modalFlag" src="" alt="Bandera" class="flag" style="display: none;">
-            <h2 id="modalTitle"></h2>
-        </div>
-        <ul id="modalMenu" class="menu-list"></ul>
-        <p id="modalInfo" class="info-text"></p>
+<div class="interactive-container">
+  <div class="container">
+    <div class="main-rect"></div>
     </div>
 </div>
 
-<script src="script.js"></script>
+<div id="infoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <img id="modalFlag" alt="Bandera" />
+    <h2 id="modalTitle"></h2>
+    <ul id="modalMenu" class="modal-menu"></ul>
+    <div id="modalInfo"></div>
+  </div>
+</div>
 
+<script src="script.js"></script>
 </body>
 </html>
