@@ -150,6 +150,100 @@ function updateTextVisibility() {
 }
 
 // =======================================================
+// EVENTOS TÁCTILES (MÓVIL)
+// =======================================================
+container.addEventListener('touchstart', (e) => {
+    // Si hay una animación de zoom en curso, la cancelamos
+    if (isZoomAnimating && animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        isZoomAnimating = false;
+        animationFrame = null;
+    }
+    
+    if (e.touches.length === 1) {
+        // Un dedo: Paneo
+        isPanning = true;
+        startX = e.touches[0].clientX - panX;
+        startY = e.touches[0].clientY - panY;
+        touchStartPanX = panX;
+        touchStartPanY = panY;
+    } else if (e.touches.length === 2) {
+        // Dos dedos: Zoom con pellizco
+        initialPinchDistance = getDistance(e.touches[0], e.touches[1]);
+        initialZoom = zoomLevel;
+        touchStartPanX = panX;
+        touchStartPanY = panY;
+    }
+}, { passive: false });
+
+container.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isPanning) {
+        // Un dedo: Paneo
+        e.preventDefault();
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        applyTransform();
+    } else if (e.touches.length === 2) {
+        // Dos dedos: Zoom con pellizco
+        e.preventDefault();
+        const currentPinchDistance = getDistance(e.touches[0], e.touches[1]);
+        const scale = currentPinchDistance / initialPinchDistance;
+        const newZoom = initialZoom * scale;
+
+        // Aseguramos que el zoom esté dentro de los límites
+        const targetZoom = Math.max(0.2, Math.min(newZoom, 12));
+
+        // Puntos de referencia para el zoom
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+        const mapX = (midX - touchStartPanX) / initialZoom;
+        const mapY = (midY - touchStartPanY) / initialZoom;
+
+        panX = midX - mapX * targetZoom;
+        panY = midY - mapY * targetZoom;
+        zoomLevel = targetZoom;
+
+        applyTransform();
+    }
+}, { passive: false });
+
+container.addEventListener('touchend', (e) => {
+    isPanning = false;
+    // Si no quedan dedos en la pantalla, reiniciamos las variables de pellizco
+    if (e.touches.length === 0) {
+        initialPinchDistance = 0;
+        initialZoom = 1;
+    }
+});
+
+// Función de ayuda para calcular la distancia entre dos toques
+function getDistance(touch1, touch2) {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Añade un evento para centrar el mapa al hacer doble toque
+container.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    fitToScreen();
+});
+
+container.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+        const now = new Date().getTime();
+        const lastTouch = e.currentTarget.lastTouch || now + 1;
+        const delta = now - lastTouch;
+        if (delta < 500 && delta > 0) {
+            e.preventDefault();
+            fitToScreen();
+        }
+        e.currentTarget.lastTouch = now;
+    }
+}, { passive: false });
+
+// =======================================================
 // STANDS CON PAÍSES
 // =======================================================
 const interactiveAreasData = [
