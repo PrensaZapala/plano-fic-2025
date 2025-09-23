@@ -38,8 +38,8 @@ body {
 /* Stands */
 .interactive-area {
   position: absolute;
-  width: 58.6px;
-  height: 58.6px;
+  width: 58px;
+  height: 58px;
   background: rgb(255, 255, 255);
   border: 1px solid #000;
   display: flex;
@@ -55,8 +55,8 @@ body {
 }
 
 .interactive-area-rect {
-    width: 81.1px;
-    height: 58.6px;
+    width: 81px;
+    height: 58px;
 }
 
 .interactive-area img.stand-flag {
