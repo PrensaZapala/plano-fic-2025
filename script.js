@@ -30,6 +30,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 let hasMoved = false;
 let isMultiTouch = false;
+let lastTapTime = 0;
 
 // =======================================================
 // STANDS CON PAÍSES
@@ -81,19 +82,30 @@ const interactiveAreasData = [
   { id: "stand-43", "x": 835, "y": 826, "name": "Stand Central 8", "flag": "https://flagcdn.com/w80/xx.png", "info": "Información de Stand Central 8" }
 ];
 
+// Variables globales para zoom mínimo
+let minZoomLevel = 0.2;
+
+// Función para calcular zoom mínimo
+function calculateMinZoom() {
+  const containerRect = document.querySelector('.interactive-container').getBoundingClientRect();
+  const mapWidth = 3916.9;
+  const mapHeight = 2326.6;
+  const scaleX = containerRect.width / mapWidth;
+  const scaleY = containerRect.height / mapHeight;
+  return Math.min(scaleX, scaleY) * 0.9; // Mismo factor que fitToScreen
+}
+
 // Función para centrar y ajustar zoom a pantalla completa
 function fitToScreen() {
+  minZoomLevel = calculateMinZoom();
+  zoomLevel = minZoomLevel;
+  
   const containerRect = document.querySelector('.interactive-container').getBoundingClientRect();
   const mapWidth = 3916.9;
   const mapHeight = 2326.6;
   
-  const scaleX = containerRect.width / mapWidth;
-  const scaleY = containerRect.height / mapHeight;
-  const scale = Math.min(scaleX, scaleY) * 0.9; // 90% para dejar un poco de margen
-  
-  zoomLevel = scale;
-  panX = (containerRect.width - mapWidth * scale) / 2;
-  panY = (containerRect.height - mapHeight * scale) / 2;
+  panX = (containerRect.width - mapWidth * zoomLevel) / 2;
+  panY = (containerRect.height - mapHeight * zoomLevel) / 2;
   
   applyTransform();
 }
@@ -103,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Pequeño delay para asegurar que todo esté cargado
   setTimeout(() => {
+    minZoomLevel = calculateMinZoom();
     fitToScreen();
   }, 100);
 });
@@ -110,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Redimensionar ventana
 window.addEventListener('resize', () => {
   initialRect = container.getBoundingClientRect();
+  minZoomLevel = calculateMinZoom();
 });
 
 function applyTransform() {
@@ -217,10 +231,11 @@ document.addEventListener('touchstart', (e) => {
     startX = touch.clientX - panX;
     startY = touch.clientY - panY;
   } else if (e.touches.length === 2) {
+    isPanning = false; // Detener panning al iniciar pinch
     const touch1 = e.touches[0];
     const touch2 = e.touches[1];
     initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-    initialZoom = zoomLevel;
+    initialZoom = zoomLevel; // Usar el zoom ACTUAL, no el anterior
   }
 }, { passive: true });
 
@@ -248,7 +263,16 @@ document.addEventListener('touchmove', (e) => {
     const touch1 = e.touches[0];
     const touch2 = e.touches[1];
     const currentPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-    const newZoom = initialZoom * (currentPinchDistance / initialPinchDistance);
+    
+    // Calcular el nuevo zoom de forma más suave
+    const zoomFactor = currentPinchDistance / initialPinchDistance;
+    let newZoom = initialZoom * zoomFactor;
+    
+    // Usar el minZoom global que ya calculamos
+    const maxZoom = 8;
+    
+    // Usar exactamente el mismo zoom mínimo que fitToScreen
+    newZoom = Math.max(minZoomLevel, Math.min(newZoom, maxZoom));
     
     // Calcula el centro del gesto táctil en coordenadas del mapa
     const touchCenterX = (touch1.clientX + touch2.clientX) / 2;
@@ -257,7 +281,7 @@ document.addEventListener('touchmove', (e) => {
     const mapY = (touchCenterY - panY) / zoomLevel;
     
     // Actualiza el zoom
-    zoomLevel = Math.max(0.2, Math.min(newZoom, 12));
+    zoomLevel = newZoom;
     
     // Recalcula el paneo para mantener el punto central en su lugar
     panX = touchCenterX - mapX * zoomLevel;
@@ -270,29 +294,57 @@ document.addEventListener('touchmove', (e) => {
 
 document.addEventListener('touchend', (e) => {
   const touchDuration = Date.now() - touchStartTime;
-  
-  // Si fue un tap rápido, sin movimiento y de un solo dedo
+  const currentTime = Date.now();
+
+  // Si pasamos de multitouch a un solo dedo, no activar pan automáticamente
+  if (e.touches.length === 1 && isMultiTouch) {
+    // 🔹 Resetear el inicio del pan al dedo que quedó
+    const touch = e.touches[0];
+    startX = touch.clientX - panX;
+    startY = touch.clientY - panY;
+    
+    // 🔹 Marcar que terminó el gesto de pinch
+    isMultiTouch = false;
+    initialPinchDistance = 0;
+    initialZoom = zoomLevel;
+    
+    // IMPORTANTE: return para no procesar tap/doble tap aquí
+    return;
+  }
+
+  // --- tap / doble tap ---
   if (!hasMoved && !isMultiTouch && touchDuration < 500 && e.changedTouches.length === 1) {
     const touch = e.changedTouches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    
-    if (element) {
-      const standElement = element.closest('.interactive-area');
-      if (standElement) {
-        const standId = standElement.id;
-        const standData = interactiveAreasData.find(area => area.id === standId);
-        if (standData) {
-          showModal(standData);
+
+    if (currentTime - lastTapTime < 300) {
+      fitToScreen();
+      lastTapTime = 0;
+    } else {
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (element) {
+        const standElement = element.closest('.interactive-area');
+        if (standElement) {
+          const standId = standElement.id;
+          const standData = interactiveAreasData.find(area => area.id === standId);
+          if (standData) showModal(standData);
         }
       }
+      lastTapTime = currentTime;
     }
   }
-  
+
+  // 🔹 Suavizar si queda fuera de rango
+  if (zoomLevel < minZoomLevel) {
+    animateZoom(zoomLevel, panX, panY, minZoomLevel, panX, panY, 200);
+  } else if (zoomLevel > 8) {
+    animateZoom(zoomLevel, panX, panY, 8, panX, panY, 200);
+  }
+
   isPanning = false;
-  initialPinchDistance = 0;
-  isMultiTouch = false;
   hasMoved = false;
 }, { passive: true });
+
+
 
 function createInteractiveArea(area) {
   const areaElement = document.createElement('div');
