@@ -8,22 +8,33 @@
 </head>
 <body>
 
-<div class="interactive-container">
-  <div class="container">
-    <div class="main-rect"></div>
+  <div id="pull-to-refresh-indicator">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 4V0L6 6h6v-2h6V4z"/>
+    <path d="M12 20V24L18 18h-6v2h-6V20z"/>
+  </svg>
+</div>
+
+  <header>
+    <img id="logo-fnic" src="logo-fnic.svg" alt="Logo de la empresa FNIC">
+  </header>
+
+  <div class="interactive-container">
+    <div class="container">
+      <div class="main-rect"></div>
     </div>
-</div>
-
-<div id="infoModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <img id="modalFlag" alt="Bandera" />
-    <h2 id="modalTitle"></h2>
-    <ul id="modalMenu" class="modal-menu"></ul>
-    <div id="modalInfo"></div>
   </div>
-</div>
 
-<script src="script.js"></script>
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <img id="modalFlag" alt="Bandera" />
+      <h2 id="modalTitle"></h2>
+      <ul id="modalMenu" class="modal-menu"></ul>
+      <div id="modalInfo"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

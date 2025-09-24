@@ -1,29 +1,91 @@
 body {
   margin: 0;
-  background: #f0f0f0;
+  background: linear-gradient(to bottom, #34668f,  #232a51);
   overflow: hidden;
   font-family: Arial, sans-serif;
+}
+
+#pull-to-refresh-indicator {
+  position: fixed;
+  top: -60px; /* Posicionarlo fuera de la pantalla */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.3s ease-out;
+  z-index: 99;
+}
+
+#pull-to-refresh-indicator svg {
+  fill: #fff;
+  width: 100%;
+  height: 100%;
+}
+
+.pulling #pull-to-refresh-indicator {
+  top: 30px; /* El icono baja 30px cuando se desliza */
+}
+
+.refreshing #pull-to-refresh-indicator svg {
+  animation: spin 1s linear infinite; /* Animación de giro al recargar */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .interactive-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 120vh;
   overflow: hidden;
   cursor: grab;
-  background: #ddd;
+  border-radius: 2vh;
 }
 
+header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 120px; /* Ajusta la altura a un valor fijo para el centrado vertical del logo */
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.582);
+  display: flex; /* Utiliza flexbox para centrar el contenido */
+  justify-content: center; /* Centra el logo horizontalmente */
+  align-items: center; /* Centra el logo verticalmente */
+  padding: 10px;
+  border-radius: 2vh;
+}
+@media (max-width: 768px) {
+  header {
+    height: 80px; /* Un alto más pequeño para móviles */
+    padding: 5px; /* Menos espacio interno */
+  }
+}
+/* Opcional: para el logo dentro del header */
+header img {
+    height: 100%; /* El logo ocupará el 100% de la altura del header */
+    width: auto;
+}
+
+
+
 .container {
+  border-radius: 10vh;
   position: absolute;
   width: 3916.9px;
   height: 2326.6px;
-  border: 2px solid #ffffff;
   transform-origin: 0 0;
-  background: url("plano-fic.svg"); /* o el nombre de tu archivo */
-  background-size: cover; /* Para que la imagen cubra todo el contenedor */
-  background-repeat: no-repeat; /* Para evitar que la imagen se repita */
-  background-position: center; /* Para centrar la imagen */
+ background: url("plano-fic.svg") no-repeat center/cover;
 }
 
 /* Plano interno */

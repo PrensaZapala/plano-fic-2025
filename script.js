@@ -1,5 +1,9 @@
+// =======================================================
+// VARIABLES Y ELEMENTOS DEL DOM
+// =======================================================
+const interactiveContainer = document.querySelector('.interactive-container');
 const container = document.querySelector('.container');
-const interactiveContainer = document.querySelector('.container');
+const header = document.querySelector('header');
 
 const modal = document.getElementById('infoModal');
 const closeBtn = document.querySelector('.close-btn');
@@ -7,9 +11,10 @@ const modalFlag = document.getElementById('modalFlag');
 const modalTitle = document.getElementById('modalTitle');
 const modalMenu = document.getElementById('modalMenu');
 const modalInfo = document.getElementById('modalInfo');
+const pullToRefreshIndicator = document.getElementById('pull-to-refresh-indicator');
 
 // =======================================================
-// ZOOM Y NAVEGACIÓN
+// GESTIÓN DE TRANSFORMACIONES Y ESTADO
 // =======================================================
 let isPanning = false;
 let startX = 0, startY = 0;
@@ -21,8 +26,7 @@ let initialZoom = 1;
 
 let isZoomAnimating = false;
 let animationFrame = null;
-
-let initialRect = null;
+let minZoomLevel = 0.2;
 
 // Variables para manejar touch eventos
 let touchStartTime = 0;
@@ -33,7 +37,7 @@ let isMultiTouch = false;
 let lastTapTime = 0;
 
 // =======================================================
-// STANDS CON PAÍSES
+// DATOS DE LOS STANDS
 // =======================================================
 const interactiveAreasData = [
   { id: "stand-1", "x": 544.0, "y": 281, "name": "Argentina", "flag": "https://flagcdn.com/w80/ar.png", "info": "Gastronomía argentina, vinos y productos tradicionales" },
@@ -82,25 +86,28 @@ const interactiveAreasData = [
   { id: "stand-43", "x": 835, "y": 826, "name": "Stand Central 8", "flag": "https://flagcdn.com/w80/xx.png", "info": "Información de Stand Central 8" }
 ];
 
-// Variables globales para zoom mínimo
-let minZoomLevel = 0.2;
+// =======================================================
+// FUNCIONES
+// =======================================================
+function applyTransform() {
+  container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+  updateTextVisibility();
+}
 
-// Función para calcular zoom mínimo
 function calculateMinZoom() {
-  const containerRect = document.querySelector('.interactive-container').getBoundingClientRect();
+  const containerRect = interactiveContainer.getBoundingClientRect();
   const mapWidth = 3916.9;
   const mapHeight = 2326.6;
   const scaleX = containerRect.width / mapWidth;
   const scaleY = containerRect.height / mapHeight;
-  return Math.min(scaleX, scaleY) * 0.9; // Mismo factor que fitToScreen
+  return Math.min(scaleX, scaleY) * 0.9;
 }
 
-// Función para centrar y ajustar zoom a pantalla completa
 function fitToScreen() {
   minZoomLevel = calculateMinZoom();
   zoomLevel = minZoomLevel;
   
-  const containerRect = document.querySelector('.interactive-container').getBoundingClientRect();
+  const containerRect = interactiveContainer.getBoundingClientRect();
   const mapWidth = 3916.9;
   const mapHeight = 2326.6;
   
@@ -110,33 +117,12 @@ function fitToScreen() {
   applyTransform();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initialRect = container.getBoundingClientRect();
-  
-  // Pequeño delay para asegurar que todo esté cargado
-  setTimeout(() => {
-    minZoomLevel = calculateMinZoom();
-    fitToScreen();
-  }, 100);
-});
-
-// Redimensionar ventana
-window.addEventListener('resize', () => {
-  initialRect = container.getBoundingClientRect();
-  minZoomLevel = calculateMinZoom();
-});
-
-function applyTransform() {
-  container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-  updateTextVisibility();
-}
-
 function animateZoom(startZoom, startPanX, startPanY, endZoom, endPanX, endPanY, duration) {
   const startTime = performance.now();
 
   function step(time) {
     const progress = Math.min((time - startTime) / duration, 1);
-    const easeProgress = Math.sin((progress * Math.PI) / 2); // easeOutSine
+    const easeProgress = Math.sin((progress * Math.PI) / 2);
 
     zoomLevel = startZoom + (endZoom - startZoom) * easeProgress;
     panX = startPanX + (endPanX - startPanX) * easeProgress;
@@ -145,12 +131,116 @@ function animateZoom(startZoom, startPanX, startPanY, endZoom, endPanX, endPanY,
     applyTransform();
 
     if (progress < 1) {
-      requestAnimationFrame(step);
+      animationFrame = requestAnimationFrame(step);
+    } else {
+        isZoomAnimating = false;
+        animationFrame = null;
     }
   }
 
-  requestAnimationFrame(step);
+  isZoomAnimating = true;
+  animationFrame = requestAnimationFrame(step);
 }
+
+function updateTextVisibility() {
+  const zoomThreshold = 0.8;
+  const interactiveAreas = document.querySelectorAll('.interactive-area');
+  interactiveAreas.forEach(area => {
+    if (zoomLevel > zoomThreshold) {
+      area.classList.add('zoomed-in');
+    } else {
+      area.classList.remove('zoomed-in');
+    }
+  });
+}
+
+function createInteractiveArea(area) {
+  const areaElement = document.createElement('div');
+  areaElement.id = area.id;
+  areaElement.classList.add('interactive-area');
+  areaElement.style.left = `${area.x}px`;
+  areaElement.style.top = `${area.y}px`;
+
+  const flagImg = document.createElement('img');
+  flagImg.src = area.flag;
+  flagImg.alt = `Bandera de ${area.name}`;
+  flagImg.className = 'stand-flag';
+  flagImg.loading = 'lazy';
+
+  const nameDiv = document.createElement('div');
+  if (parseInt(area.id.replace('stand-', '')) > 35) {
+    areaElement.classList.add('interactive-area-rect');
+  }
+  nameDiv.className = 'stand-name';
+  nameDiv.textContent = area.name;
+
+  areaElement.appendChild(flagImg);
+  areaElement.appendChild(nameDiv);
+  
+  // AÑADIR LOS STANDS AL CONTENEDOR QUE SE MUEVE
+  container.appendChild(areaElement);
+
+  // Solo agregar click para PC (no afecta en móviles con touchstart)
+  areaElement.addEventListener('click', (e) => { 
+    e.stopPropagation(); 
+    showModal(area); 
+  });
+}
+
+function showModal(area) {
+  modalTitle.textContent = area.name;
+  modalFlag.src = area.flag;
+  modalFlag.alt = `Bandera de ${area.name}`;
+  modalInfo.textContent = area.info || 'Información no disponible';
+  
+  modalMenu.innerHTML = '';
+  
+  if (area.menu && area.menu.length > 0) {
+    area.menu.forEach(item => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = '#';
+      link.textContent = item;
+      li.appendChild(link);
+      modalMenu.appendChild(li);
+    });
+  }
+  
+  modal.style.display = 'flex';
+}
+
+function hideModal() { 
+  modal.style.display = 'none'; 
+}
+
+// =======================================================
+// GESTIÓN DE EVENTOS
+// =======================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Crear todos los stands
+    interactiveAreasData.forEach(createInteractiveArea);
+  
+    // Pequeño retraso para asegurar que el DOM esté completamente renderizado
+    setTimeout(() => {
+        fitToScreen();
+    }, 100);
+});
+
+window.addEventListener('resize', fitToScreen);
+closeBtn.onclick = hideModal;
+
+window.onclick = e => { 
+  if (e.target === modal) hideModal(); 
+};
+
+document.addEventListener('keydown', e => { 
+  if (e.key === 'Escape' && modal.style.display === 'flex') hideModal(); 
+});
+
+container.addEventListener('dblclick', (e) => {
+  e.preventDefault();
+  fitToScreen();
+});
 
 // Event listeners para mouse (PC)
 container.addEventListener('mousedown', (e) => {
@@ -182,13 +272,12 @@ window.addEventListener('mousemove', (e) => {
 
 container.addEventListener('wheel', (e) => {
   e.preventDefault();
-  const zoomSpeed = 0.3; // zoom más fino
+  const zoomSpeed = 0.3;
 
   const oldZoomLevel = zoomLevel;
   const oldPanX = panX;
   const oldPanY = panY;
 
-  // Calculamos destino sin aplicarlo todavía
   let targetZoom = e.deltaY < 0 ? zoomLevel + zoomSpeed : zoomLevel - zoomSpeed;
   targetZoom = Math.max(0.2, Math.min(targetZoom, 12));
 
@@ -201,23 +290,54 @@ container.addEventListener('wheel', (e) => {
   const targetPanX = cursorX - mapX * targetZoom;
   const targetPanY = cursorY - mapY * targetZoom;
 
-  // Animación interpolando desde valores actuales hasta los nuevos
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
 }, { passive: false });
 
-function updateTextVisibility() {
-  const zoomThreshold = 0.8;
-  const interactiveAreas = document.querySelectorAll('.interactive-area');
-  interactiveAreas.forEach(area => {
-    if (zoomLevel > zoomThreshold) {
-      area.classList.add('zoomed-in');
-    } else {
-      area.classList.remove('zoomed-in');
-    }
-  });
-}
+// ----------------------------------------------------
+// TOUCH EVENTS (PANEO, ZOOM Y PULL-TO-REFRESH)
+// ----------------------------------------------------
+let pullRefreshStartY = 0;
+const PULL_REFRESH_THRESHOLD = 80;
 
-// TOUCH EVENTS COMPLETAMENTE REESCRITOS
+// Escuchar los eventos táctiles en el header
+header.addEventListener('touchstart', (e) => {
+  touchStartTime = Date.now();
+  if (e.touches.length === 1) {
+    // Iniciar el seguimiento para "pull-to-refresh"
+    pullRefreshStartY = e.touches[0].pageY;
+  }
+}, { passive: true });
+
+header.addEventListener('touchmove', (e) => {
+  const touch = e.touches[0];
+  const diff = touch.pageY - pullRefreshStartY;
+
+  if (diff > 0) {
+    e.preventDefault();
+    if (diff > PULL_REFRESH_THRESHOLD) {
+      document.body.classList.add('ready-to-refresh');
+      document.body.classList.remove('pulling');
+    } else {
+      document.body.classList.add('pulling');
+      document.body.classList.remove('ready-to-refresh');
+    }
+  }
+}, { passive: false });
+
+header.addEventListener('touchend', (e) => {
+  const endY = e.changedTouches[0].pageY;
+  const diff = endY - pullRefreshStartY;
+  
+  document.body.classList.remove('pulling');
+  document.body.classList.remove('ready-to-refresh');
+
+  if (diff > PULL_REFRESH_THRESHOLD) {
+    document.body.classList.add('refreshing');
+    window.location.reload();
+  }
+}, { passive: true });
+
+// Eventos de la página completa para zoom y paneo del mapa
 document.addEventListener('touchstart', (e) => {
   touchStartTime = Date.now();
   isMultiTouch = e.touches.length > 1;
@@ -230,12 +350,13 @@ document.addEventListener('touchstart', (e) => {
     
     startX = touch.clientX - panX;
     startY = touch.clientY - panY;
+
   } else if (e.touches.length === 2) {
-    isPanning = false; // Detener panning al iniciar pinch
+    isPanning = false;
     const touch1 = e.touches[0];
     const touch2 = e.touches[1];
     initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-    initialZoom = zoomLevel; // Usar el zoom ACTUAL, no el anterior
+    initialZoom = zoomLevel;
   }
 }, { passive: true });
 
@@ -247,7 +368,6 @@ document.addEventListener('touchmove', (e) => {
     const moveX = Math.abs(touch.clientX - touchStartX);
     const moveY = Math.abs(touch.clientY - touchStartY);
     
-    // Si se movió más de 5px, consideramos que es panning
     if (moveX > 5 || moveY > 5) {
       hasMoved = true;
       isPanning = true;
@@ -264,26 +384,20 @@ document.addEventListener('touchmove', (e) => {
     const touch2 = e.touches[1];
     const currentPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
     
-    // Calcular el nuevo zoom de forma más suave
     const zoomFactor = currentPinchDistance / initialPinchDistance;
     let newZoom = initialZoom * zoomFactor;
     
-    // Usar el minZoom global que ya calculamos
     const maxZoom = 8;
     
-    // Usar exactamente el mismo zoom mínimo que fitToScreen
     newZoom = Math.max(minZoomLevel, Math.min(newZoom, maxZoom));
     
-    // Calcula el centro del gesto táctil en coordenadas del mapa
     const touchCenterX = (touch1.clientX + touch2.clientX) / 2;
     const touchCenterY = (touch1.clientY + touch2.clientY) / 2;
     const mapX = (touchCenterX - panX) / zoomLevel;
     const mapY = (touchCenterY - panY) / zoomLevel;
     
-    // Actualiza el zoom
     zoomLevel = newZoom;
     
-    // Recalcula el paneo para mantener el punto central en su lugar
     panX = touchCenterX - mapX * zoomLevel;
     panY = touchCenterY - mapY * zoomLevel;
     
@@ -296,23 +410,18 @@ document.addEventListener('touchend', (e) => {
   const touchDuration = Date.now() - touchStartTime;
   const currentTime = Date.now();
 
-  // Si pasamos de multitouch a un solo dedo, no activar pan automáticamente
   if (e.touches.length === 1 && isMultiTouch) {
-    // 🔹 Resetear el inicio del pan al dedo que quedó
     const touch = e.touches[0];
     startX = touch.clientX - panX;
     startY = touch.clientY - panY;
     
-    // 🔹 Marcar que terminó el gesto de pinch
     isMultiTouch = false;
     initialPinchDistance = 0;
     initialZoom = zoomLevel;
     
-    // IMPORTANTE: return para no procesar tap/doble tap aquí
     return;
   }
 
-  // --- tap / doble tap ---
   if (!hasMoved && !isMultiTouch && touchDuration < 500 && e.changedTouches.length === 1) {
     const touch = e.changedTouches[0];
 
@@ -333,7 +442,6 @@ document.addEventListener('touchend', (e) => {
     }
   }
 
-  // 🔹 Suavizar si queda fuera de rango
   if (zoomLevel < minZoomLevel) {
     animateZoom(zoomLevel, panX, panY, minZoomLevel, panX, panY, 200);
   } else if (zoomLevel > 8) {
@@ -343,85 +451,3 @@ document.addEventListener('touchend', (e) => {
   isPanning = false;
   hasMoved = false;
 }, { passive: true });
-
-
-
-function createInteractiveArea(area) {
-  const areaElement = document.createElement('div');
-  areaElement.id = area.id;
-  areaElement.classList.add('interactive-area');
-  areaElement.style.left = `${area.x}px`;
-  areaElement.style.top = `${area.y}px`;
-
-  const flagImg = document.createElement('img');
-  flagImg.src = area.flag;
-  flagImg.alt = `Bandera de ${area.name}`;
-  flagImg.className = 'stand-flag';
-  flagImg.loading = 'lazy';
-
-  const nameDiv = document.createElement('div');
-  if (parseInt(area.id.replace('stand-', '')) > 35) {
-    areaElement.classList.add('interactive-area-rect');
-  }
-  nameDiv.className = 'stand-name';
-  nameDiv.textContent = area.name;
-
-  areaElement.appendChild(flagImg);
-  areaElement.appendChild(nameDiv);
-
-  // Solo agregar click para PC
-  areaElement.addEventListener('click', (e) => { 
-    e.stopPropagation(); 
-    showModal(area); 
-  });
-  
-  interactiveContainer.appendChild(areaElement);
-}
-
-interactiveAreasData.forEach(createInteractiveArea);
-
-function showModal(area) {
-  modalTitle.textContent = area.name;
-  modalFlag.src = area.flag;
-  modalFlag.alt = `Bandera de ${area.name}`;
-  modalInfo.textContent = area.info || 'Información no disponible';
-  
-  // Limpiar menú anterior
-  modalMenu.innerHTML = '';
-  
-  // Si hay menú específico, agregarlo
-  if (area.menu && area.menu.length > 0) {
-    area.menu.forEach(item => {
-      const li = document.createElement('li');
-      const link = document.createElement('a');
-      link.href = '#';
-      link.textContent = item;
-      li.appendChild(link);
-      modalMenu.appendChild(li);
-    });
-  }
-  
-  modal.style.display = 'flex';
-}
-
-function hideModal() { 
-  modal.style.display = 'none'; 
-}
-
-closeBtn.onclick = hideModal;
-
-window.onclick = e => { 
-  if (e.target === modal) hideModal(); 
-};
-
-document.addEventListener('keydown', e => { 
-  if (e.key === 'Escape' && modal.style.display === 'flex') hideModal(); 
-});
-
-// Doble clic para volver a la vista completa
-container.addEventListener('dblclick', (e) => {
-  e.preventDefault();
-  fitToScreen();
-});
-
-applyTransform();
