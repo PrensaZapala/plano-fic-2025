@@ -11,7 +11,6 @@ const modalFlag = document.getElementById('modalFlag');
 const modalTitle = document.getElementById('modalTitle');
 const modalMenu = document.getElementById('modalMenu');
 const modalInfo = document.getElementById('modalInfo');
-const pullToRefreshIndicator = document.getElementById('pull-to-refresh-indicator');
 
 // =======================================================
 // GESTIÓN DE TRANSFORMACIONES Y ESTADO
@@ -35,6 +34,11 @@ let touchStartY = 0;
 let hasMoved = false;
 let isMultiTouch = false;
 let lastTapTime = 0;
+
+// =======================================================
+// SOLUCIÓN PARA EVITAR QUE EL MODAL SE CIERRE AL INSTANTE
+// =======================================================
+let isModalBeingShown = false; // Nueva variable de estado
 
 // =======================================================
 // DATOS DE LOS STANDS
@@ -103,22 +107,31 @@ function calculateMinZoom() {
   return Math.min(scaleX, scaleY) * 0.9;
 }
 
-function fitToScreen() {
-  minZoomLevel = calculateMinZoom();
-  zoomLevel = minZoomLevel;
-  
-  const containerRect = interactiveContainer.getBoundingClientRect();
-  const mapWidth = 3916.9;
-  const mapHeight = 2326.6;
-  
-  panX = (containerRect.width - mapWidth * zoomLevel) / 2;
-  panY = (containerRect.height - mapHeight * zoomLevel) / 2;
-  
-  applyTransform();
+function setInitialView() {
+    const containerRect = interactiveContainer.getBoundingClientRect();
+
+    const viewboxX = 215.9;
+    const viewboxY = 82.9;
+    const viewboxWidth = 1401.3;
+    const viewboxHeight = 2240.3;
+
+    const scaleX = containerRect.width / viewboxWidth;
+    const scaleY = containerRect.height / viewboxHeight;
+    zoomLevel = Math.min(scaleX, scaleY);
+    
+    const centeredPanX = (containerRect.width - viewboxWidth * zoomLevel) / 2;
+    const centeredPanY = (containerRect.height - viewboxHeight * zoomLevel) / 2;
+    
+    panX = centeredPanX - (viewboxX * zoomLevel);
+    panY = centeredPanY - (viewboxY * zoomLevel);
+    
+    applyTransform();
+    console.log("INFO: Vista inicial aplicada. Zoom:", zoomLevel, "Pan:", panX, panY);
 }
 
 function animateZoom(startZoom, startPanX, startPanY, endZoom, endPanX, endPanY, duration) {
   const startTime = performance.now();
+  console.log("INFO: Iniciando animación de zoom...");
 
   function step(time) {
     const progress = Math.min((time - startTime) / duration, 1);
@@ -135,6 +148,7 @@ function animateZoom(startZoom, startPanX, startPanY, endZoom, endPanX, endPanY,
     } else {
         isZoomAnimating = false;
         animationFrame = null;
+        console.log("INFO: Animación de zoom finalizada.");
     }
   }
 
@@ -188,6 +202,7 @@ function createInteractiveArea(area) {
 }
 
 function showModal(area) {
+  console.log(`INFO: Mostrando modal para el stand: ${area.name}`);
   modalTitle.textContent = area.name;
   modalFlag.src = area.flag;
   modalFlag.alt = `Bandera de ${area.name}`;
@@ -207,10 +222,17 @@ function showModal(area) {
   }
   
   modal.style.display = 'flex';
+  
+  // Establecer la bandera para ignorar el siguiente evento de clic
+  isModalBeingShown = true;
+  setTimeout(() => {
+    isModalBeingShown = false;
+  }, 50); // El tiempo es suficiente para que el evento de clic se dispare y se ignore.
 }
 
 function hideModal() { 
-  modal.style.display = 'none'; 
+  modal.style.display = 'none';
+  console.log("INFO: Modal ocultado.");
 }
 
 // =======================================================
@@ -222,14 +244,21 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // Pequeño retraso para asegurar que el DOM esté completamente renderizado
     setTimeout(() => {
-        fitToScreen();
+        setInitialView();
     }, 100);
 });
 
-window.addEventListener('resize', fitToScreen);
+window.addEventListener('resize', () => {
+    setInitialView();
+});
 closeBtn.onclick = hideModal;
 
+// Modificado para evitar que el modal se cierre inmediatamente
 window.onclick = e => { 
+  if (isModalBeingShown) {
+    console.log("AVISO: Clic de propagación detectado. Se ignora para evitar cierre inmediato del modal.");
+    return;
+  }
   if (e.target === modal) hideModal(); 
 };
 
@@ -239,7 +268,7 @@ document.addEventListener('keydown', e => {
 
 container.addEventListener('dblclick', (e) => {
   e.preventDefault();
-  fitToScreen();
+  setInitialView();
 });
 
 // Event listeners para mouse (PC)
@@ -255,12 +284,14 @@ container.addEventListener('mousedown', (e) => {
     startX = e.clientX - panX;
     startY = e.clientY - panY;
     e.preventDefault();
+    console.log("PAN: Mousedown detectado. Iniciando paneo.");
   }
 });
 
 window.addEventListener('mouseup', () => { 
   isPanning = false; 
   container.style.cursor = 'grab'; 
+  console.log("PAN: Mouseup detectado. Finalizando paneo.");
 });
 
 window.addEventListener('mousemove', (e) => {
@@ -294,51 +325,11 @@ container.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 // ----------------------------------------------------
-// TOUCH EVENTS (PANEO, ZOOM Y PULL-TO-REFRESH)
+// TOUCH EVENTS (PANEO Y ZOOM)
 // ----------------------------------------------------
-let pullRefreshStartY = 0;
-const PULL_REFRESH_THRESHOLD = 80;
 
-// Escuchar los eventos táctiles en el header
-header.addEventListener('touchstart', (e) => {
-  touchStartTime = Date.now();
-  if (e.touches.length === 1) {
-    // Iniciar el seguimiento para "pull-to-refresh"
-    pullRefreshStartY = e.touches[0].pageY;
-  }
-}, { passive: true });
-
-header.addEventListener('touchmove', (e) => {
-  const touch = e.touches[0];
-  const diff = touch.pageY - pullRefreshStartY;
-
-  if (diff > 0) {
-    e.preventDefault();
-    if (diff > PULL_REFRESH_THRESHOLD) {
-      document.body.classList.add('ready-to-refresh');
-      document.body.classList.remove('pulling');
-    } else {
-      document.body.classList.add('pulling');
-      document.body.classList.remove('ready-to-refresh');
-    }
-  }
-}, { passive: false });
-
-header.addEventListener('touchend', (e) => {
-  const endY = e.changedTouches[0].pageY;
-  const diff = endY - pullRefreshStartY;
-  
-  document.body.classList.remove('pulling');
-  document.body.classList.remove('ready-to-refresh');
-
-  if (diff > PULL_REFRESH_THRESHOLD) {
-    document.body.classList.add('refreshing');
-    window.location.reload();
-  }
-}, { passive: true });
-
-// Eventos de la página completa para zoom y paneo del mapa
-document.addEventListener('touchstart', (e) => {
+// Eventos táctiles para zoom y paneo del mapa (solo en el contenedor interactivo)
+interactiveContainer.addEventListener('touchstart', (e) => {
   touchStartTime = Date.now();
   isMultiTouch = e.touches.length > 1;
   hasMoved = false;
@@ -350,6 +341,7 @@ document.addEventListener('touchstart', (e) => {
     
     startX = touch.clientX - panX;
     startY = touch.clientY - panY;
+    console.log("TOUCH: Touchstart detectado (1 dedo).");
 
   } else if (e.touches.length === 2) {
     isPanning = false;
@@ -357,10 +349,11 @@ document.addEventListener('touchstart', (e) => {
     const touch2 = e.touches[1];
     initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
     initialZoom = zoomLevel;
+    console.log("TOUCH: Touchstart detectado (2 dedos). Iniciando pinch-zoom.");
   }
 }, { passive: true });
 
-document.addEventListener('touchmove', (e) => {
+interactiveContainer.addEventListener('touchmove', (e) => {
   if (isZoomAnimating) return;
   
   if (e.touches.length === 1 && !isMultiTouch) {
@@ -406,9 +399,10 @@ document.addEventListener('touchmove', (e) => {
   }
 }, { passive: false });
 
-document.addEventListener('touchend', (e) => {
+interactiveContainer.addEventListener('touchend', (e) => {
   const touchDuration = Date.now() - touchStartTime;
   const currentTime = Date.now();
+  console.log(`TOUCH: Touchend detectado. Duración: ${touchDuration}ms, Movimiento: ${hasMoved}`);
 
   if (e.touches.length === 1 && isMultiTouch) {
     const touch = e.touches[0];
@@ -418,15 +412,19 @@ document.addEventListener('touchend', (e) => {
     isMultiTouch = false;
     initialPinchDistance = 0;
     initialZoom = zoomLevel;
-    
+    console.log("TOUCH: Se finalizó pinch-zoom. Preparando para un solo toque.");
     return;
   }
 
+  // Lógica para detectar el toque simple (tap)
   if (!hasMoved && !isMultiTouch && touchDuration < 500 && e.changedTouches.length === 1) {
     const touch = e.changedTouches[0];
-
+    
+    console.log(`TOUCH: Posible toque detectado en X:${touch.clientX}, Y:${touch.clientY}`);
+    
     if (currentTime - lastTapTime < 300) {
-      fitToScreen();
+      console.log("TOUCH: Doble toque detectado. Restableciendo la vista.");
+      setInitialView();
       lastTapTime = 0;
     } else {
       const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -435,8 +433,15 @@ document.addEventListener('touchend', (e) => {
         if (standElement) {
           const standId = standElement.id;
           const standData = interactiveAreasData.find(area => area.id === standId);
-          if (standData) showModal(standData);
+          if (standData) {
+            console.log("TOUCH: ¡Stand encontrado! ID:", standId);
+            showModal(standData);
+          }
+        } else {
+          console.log("TOUCH: No se encontró un stand en el punto de toque.");
         }
+      } else {
+        console.log("TOUCH: No se encontró ningún elemento en el punto de toque.");
       }
       lastTapTime = currentTime;
     }

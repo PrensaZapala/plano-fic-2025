@@ -1,83 +1,78 @@
-body {
+html, body {
   margin: 0;
-  background: linear-gradient(to bottom, #34668f,  #232a51);
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-
-#pull-to-refresh-indicator {
-  position: fixed;
-  top: -60px; /* Posicionarlo fuera de la pantalla */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: top 0.3s ease-out;
-  z-index: 99;
-}
-
-#pull-to-refresh-indicator svg {
-  fill: #fff;
-  width: 100%;
+  padding: 0;
   height: 100%;
+  overflow-y: auto; /* Permite el desplazamiento vertical para el pull-to-refresh nativo */
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #34668f, #232a51);
 }
 
-.pulling #pull-to-refresh-indicator {
-  top: 30px; /* El icono baja 30px cuando se desliza */
-}
-
-.refreshing #pull-to-refresh-indicator svg {
-  animation: spin 1s linear infinite; /* Animación de giro al recargar */
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.interactive-container {
-  position: relative;
-  width: 100%;
-  height: 120vh;
-  overflow: hidden;
-  cursor: grab;
-  border-radius: 2vh;
+body {
+  display: flex;
+  flex-direction: column; /* Coloca los elementos hijos en una columna */
 }
 
 header {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  height: 120px; /* Ajusta la altura a un valor fijo para el centrado vertical del logo */
-  z-index: 100;
+  /* No uses 'position: absolute'. Déjalo en el flujo normal del documento. */
   background-color: rgba(255, 255, 255, 0.582);
-  display: flex; /* Utiliza flexbox para centrar el contenido */
-  justify-content: center; /* Centra el logo horizontalmente */
-  align-items: center; /* Centra el logo verticalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
   border-radius: 2vh;
+  margin: 10px; /* Separación del borde de la pantalla */
+  z-index: 100;
+  height: 100px;
 }
+
+header img {
+  height: 100%; /* El logo ocupa el 100% del espacio disponible en el header */
+  width: auto;
+}
+
+/* Nuevas reglas para el div de instrucciones */
+.instructions {
+  background-color: rgba(255, 255, 255, 0.582);
+  color: #333;
+  padding: 10px;
+  text-align: center;
+  margin: 0 10px;
+  border-radius: 2vh;
+  font-size: 14px;
+}
+
+/* Estilo para los párrafos dentro del div de instrucciones */
+.instructions p {
+  margin: 0;
+  color: #000;
+  font-weight: bold;
+}
+
+.interactive-container {
+  flex-grow: 1; /* Esto hace que ocupe todo el espacio vertical restante */
+  position: relative;
+  width: calc(100% - 20px); /* Ocupa el 100% del ancho menos el margen de 10px de cada lado */
+  margin: 10px; /* Margen para coincidir con el header y las instrucciones */
+  overflow: hidden;
+  cursor: grab;
+  border-radius: 2vh;
+  background: #fafafa;
+}
+
 @media (max-width: 768px) {
   header {
-    height: 80px; /* Un alto más pequeño para móviles */
-    padding: 5px; /* Menos espacio interno */
+    height: 80px;
+    padding: 5px;
+    margin: 5px;
+  }
+  .interactive-container {
+    width: calc(100% - 10px);
+    margin: 5px;
+  }
+  .instructions {
+    margin: 0 5px;
   }
 }
-/* Opcional: para el logo dentro del header */
-header img {
-    height: 100%; /* El logo ocupará el 100% de la altura del header */
-    width: auto;
-}
-
-
 
 .container {
   border-radius: 10vh;
@@ -85,7 +80,7 @@ header img {
   width: 3916.9px;
   height: 2326.6px;
   transform-origin: 0 0;
- background: url("plano-fic.svg") no-repeat center/cover;
+  background: url("plano-fic.svg") no-repeat center/cover;
 }
 
 /* Plano interno */
@@ -117,8 +112,8 @@ header img {
 }
 
 .interactive-area-rect {
-    width: 81px;
-    height: 58px;
+  width: 81px;
+  height: 58px;
 }
 
 .interactive-area img.stand-flag {
