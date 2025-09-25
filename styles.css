@@ -1,47 +1,52 @@
+:root {
+  --primary-bg: rgba(255, 255, 255, 0.582);
+  --border-radius: 2vh;
+  --modal-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --interactive-hover: rgba(0, 123, 255, 0.2);
+  --margin: 10px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-y: auto; /* Permite el desplazamiento vertical para el pull-to-refresh nativo */
+  overflow-y: auto;
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #34668f, #232a51);
 }
 
 body {
   display: flex;
-  flex-direction: column; /* Coloca los elementos hijos en una columna */
+  flex-direction: column;
 }
 
 header {
-  /* No uses 'position: absolute'. Déjalo en el flujo normal del documento. */
-  background-color: rgba(255, 255, 255, 0.582);
+  background-color: var(--primary-bg);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 10px;
-  border-radius: 2vh;
-  margin: 10px; /* Separación del borde de la pantalla */
+  border-radius: var(--border-radius);
+  margin: var(--margin);
   z-index: 100;
   height: 100px;
 }
 
 header img {
-  height: 100%; /* El logo ocupa el 100% del espacio disponible en el header */
+  height: 100%;
   width: auto;
 }
 
-/* Nuevas reglas para el div de instrucciones */
 .instructions {
-  background-color: rgba(255, 255, 255, 0.582);
+  background-color: var(--primary-bg);
   color: #333;
   padding: 10px;
   text-align: center;
-  margin: 0 10px;
-  border-radius: 2vh;
+  margin: 0 var(--margin);
+  border-radius: var(--border-radius);
   font-size: 14px;
 }
 
-/* Estilo para los párrafos dentro del div de instrucciones */
 .instructions p {
   margin: 0;
   color: #000;
@@ -49,14 +54,35 @@ header img {
 }
 
 .interactive-container {
-  flex-grow: 1; /* Esto hace que ocupe todo el espacio vertical restante */
+  flex-grow: 1;
   position: relative;
-  width: calc(100% - 20px); /* Ocupa el 100% del ancho menos el margen de 10px de cada lado */
-  margin: 10px; /* Margen para coincidir con el header y las instrucciones */
+  width: calc(100% - 2 * var(--margin));
+  margin: var(--margin);
   overflow: hidden;
   cursor: grab;
-  border-radius: 2vh;
+  border-radius: var(--border-radius);
   background: #fafafa;
+  aspect-ratio: 3916.9 / 2326.6;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: var(--margin);
+}
+
+.controls button {
+  padding: 8px 16px;
+  background-color: var(--primary-bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.controls button:hover {
+  background-color: var(--interactive-hover);
 }
 
 @media (max-width: 768px) {
@@ -72,18 +98,22 @@ header img {
   .instructions {
     margin: 0 5px;
   }
+  .controls button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
 }
 
 .container {
-  border-radius: 10vh;
+  border-radius: var(--border-radius);
   position: absolute;
   width: 3916.9px;
   height: 2326.6px;
   transform-origin: 0 0;
   background: url("plano-fic.svg") no-repeat center/cover;
+  image-rendering: optimizeQuality;
 }
 
-/* Plano interno */
 .main-rect {
   position: absolute;
   left: 402px;
@@ -92,7 +122,6 @@ header img {
   height: 1228.6px;
 }
 
-/* Stands */
 .interactive-area {
   position: absolute;
   width: 58px;
@@ -104,7 +133,7 @@ header img {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
   cursor: pointer;
   padding: 2px;
   border-radius: 1.5vb;
@@ -124,14 +153,14 @@ header img {
   display: block;
 }
 
-.interactive-area .stand-name {
+.stand-name {
   font-size: 8px;
   color: #000;
   text-align: center;
   opacity: 0;
   transition: opacity 0.3s;
   font-weight: bold;
-  text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
   margin-top: 2px;
 }
 
@@ -143,17 +172,16 @@ header img {
   opacity: 1;
 }
 
-.interactive-area:hover {
-  background: rgb(255, 255, 255);
+.interactive-area:hover, .interactive-area:focus {
+  background: var(--interactive-hover);
   transform: scale(1.1);
 }
 
-/* Modal */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -163,11 +191,11 @@ header img {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  max-width: 400px;
+  max-width: clamp(300px, 80vw, 400px);
   width: 90%;
   text-align: center;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: var(--modal-shadow);
 }
 
 .modal-content img {
@@ -220,19 +248,4 @@ header img {
   background: #f0f0f0;
   border-radius: 6px;
   font-size: 14px;
-}
-
-/* Estilos por defecto para móviles */
-#instructions-pc {
-  display: none;
-}
-
-/* Media query para pantallas de PC (mayores a 768px) */
-@media (min-width: 768px) {
-  #instructions-mobile {
-    display: none;
-  }
-  #instructions-pc {
-    display: block;
-  }
 }

@@ -1,38 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plano Interactivo</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Interactivo</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-   <header>
-    <img id="logo-fnic" src="logo-fnic.svg" alt="Logo de la empresa FNIC">
+  <header>
+    <img src="logo-fnic.svg" alt="Logo del evento">
   </header>
-
-  <div class="instructions">
-    <p id="instructions-mobile">Utiliza dos dedos para hacer zoom y arrastra para moverte por el plano. Toca un stand para ver más información.</p>
-    <p id="instructions-pc">Utiliza la rueda del mouse para hacer zoom y el clic izquierdo para arrastrar el plano. Haz clic en un stand para ver más información.</p>
-  </div>
-
-  <div class="interactive-container">
+  <section class="instructions">
+    <p id="instructions-pc">Utiliza la rueda del mouse para **zoom** y arrastra para **panear**. Doble clic para restablecer la vista.</p>
+    <p id="instructions-mobile">Utiliza dos dedos para **zoom** y un dedo para **panear**. Doble toque para restablecer la vista.</p>
+  </section>
+  <main class="interactive-container">
     <div class="container">
-      <div class="main-rect"></div>
-    </div>
+      </div>
+  </main>
+  <div class="controls">
+    <button id="zoom-in">Zoom +</button>
+    <button id="zoom-out">Zoom -</button>
+    <button id="reset-view">Restablecer</button>
   </div>
-
-  <div id="infoModal" class="modal">
+  <div id="infoModal" class="modal" role="dialog" aria-labelledby="modalTitle">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <img id="modalFlag" alt="Bandera" />
+      <span class="close-btn" aria-label="Cerrar modal">&times;</span>
+      <img id="modalFlag" src="" alt="">
       <h2 id="modalTitle"></h2>
       <ul id="modalMenu" class="modal-menu"></ul>
       <div id="modalInfo"></div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

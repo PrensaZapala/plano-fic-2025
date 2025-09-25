@@ -24,6 +24,12 @@ const modalInfo = document.getElementById('modalInfo');
 const instructionsMobile = document.getElementById('instructions-mobile');
 const instructionsPC = document.getElementById('instructions-pc');
 
+// Nuevas variables para los botones de control
+const zoomInBtn = document.getElementById('zoom-in');
+const zoomOutBtn = document.getElementById('zoom-out');
+const resetViewBtn = document.getElementById('reset-view');
+
+
 // =======================================================
 // GESTIÓN DE TRANSFORMACIONES Y ESTADO
 // =======================================================
@@ -46,6 +52,12 @@ let touchStartY = 0;
 let hasMoved = false;
 let isMultiTouch = false;
 let lastTapTime = 0;
+
+// Variables para la vista inicial
+let initialZoomLevel = 1;
+let initialPanX = 0;
+let initialPanY = 0;
+
 
 // =======================================================
 // DATOS DE LOS STANDS
@@ -127,21 +139,29 @@ function setInitialView() {
     // Calcular el nivel de zoom para que el área encaje en el contenedor
     const scaleX = containerRect.width / viewboxWidth;
     const scaleY = containerRect.height / viewboxHeight;
-    zoomLevel = Math.min(scaleX, scaleY);
+    initialZoomLevel = Math.min(scaleX, scaleY);
     
     // Calcular la posición para centrar el área
-    const centeredPanX = (containerRect.width - viewboxWidth * zoomLevel) / 2;
-    const centeredPanY = (containerRect.height - viewboxHeight * zoomLevel) / 2;
+    const centeredPanX = (containerRect.width - viewboxWidth * initialZoomLevel) / 2;
+    const centeredPanY = (containerRect.height - viewboxHeight * initialZoomLevel) / 2;
     
     // Ajustar el paneo para mover el punto de origen
-    panX = centeredPanX - (viewboxX * zoomLevel);
-    panY = centeredPanY - (viewboxY * zoomLevel);
+    initialPanX = centeredPanX - (viewboxX * initialZoomLevel);
+    initialPanY = centeredPanY - (viewboxY * initialZoomLevel);
+    
+    // Aplicar la vista inicial
+    zoomLevel = initialZoomLevel;
+    panX = initialPanX;
+    panY = initialPanY;
     
     applyTransform();
     console.log("INFO: Vista inicial aplicada. Zoom:", zoomLevel, "Pan:", panX, panY);
 }
 
 function animateZoom(startZoom, startPanX, startPanY, endZoom, endPanX, endPanY, duration) {
+  if (isZoomAnimating) {
+    cancelAnimationFrame(animationFrame);
+  }
   const startTime = performance.now();
   console.log("INFO: Iniciando animación de zoom...");
 
@@ -244,19 +264,63 @@ function hideModal() {
 // =======================================================
 // GESTIÓN DE EVENTOS
 // =======================================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Crear todos los stands
-    interactiveAreasData.forEach(createInteractiveArea);
-  
-    // Pequeño retraso para asegurar que el DOM esté completamente renderizado
-    setTimeout(() => {
-        setInitialView();
-    }, 100);
+
+// Event listeners para botones de control
+zoomInBtn.addEventListener('click', () => {
+  const oldZoomLevel = zoomLevel;
+  const oldPanX = panX;
+  const oldPanY = panY;
+
+  const containerRect = interactiveContainer.getBoundingClientRect();
+  const centerX = containerRect.width / 2;
+  const centerY = containerRect.height / 2;
+  const zoomFactor = 1.2;
+
+  const targetZoom = Math.max(minZoomLevel, Math.min(zoomLevel * zoomFactor, 12));
+
+  const mapX = (centerX - oldPanX) / oldZoomLevel;
+  const mapY = (centerY - oldPanY) / oldZoomLevel;
+
+  const targetPanX = centerX - mapX * targetZoom;
+  const targetPanY = centerY - mapY * targetZoom;
+
+  animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
 });
 
-window.addEventListener('resize', () => {
-    setInitialView();
+zoomOutBtn.addEventListener('click', () => {
+  const oldZoomLevel = zoomLevel;
+  const oldPanX = panX;
+  const oldPanY = panY;
+
+  const containerRect = interactiveContainer.getBoundingClientRect();
+  const centerX = containerRect.width / 2;
+  const centerY = containerRect.height / 2;
+  const zoomFactor = 0.8;
+
+  const targetZoom = Math.max(minZoomLevel, Math.min(zoomLevel * zoomFactor, 12));
+
+  const mapX = (centerX - oldPanX) / oldZoomLevel;
+  const mapY = (centerY - oldPanY) / oldZoomLevel;
+
+  const targetPanX = centerX - mapX * targetZoom;
+  const targetPanY = centerY - mapY * targetZoom;
+
+  animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
 });
+
+resetViewBtn.addEventListener('click', () => {
+  if (isZoomAnimating && animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      isZoomAnimating = false;
+      animationFrame = null;
+  }
+  const oldZoomLevel = zoomLevel;
+  const oldPanX = panX;
+  const oldPanY = panY;
+  animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
+});
+
+
 closeBtn.onclick = hideModal;
 
 window.onclick = e => { 
@@ -269,7 +333,10 @@ document.addEventListener('keydown', e => {
 
 container.addEventListener('dblclick', (e) => {
   e.preventDefault();
-  setInitialView();
+  const oldZoomLevel = zoomLevel;
+  const oldPanX = panX;
+  const oldPanY = panY;
+  animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
 });
 
 // Event listeners para mouse (PC)
@@ -334,6 +401,12 @@ interactiveContainer.addEventListener('touchstart', (e) => {
   touchStartTime = Date.now();
   isMultiTouch = e.touches.length > 1;
   hasMoved = false;
+  
+  if (isZoomAnimating && animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      isZoomAnimating = false;
+      animationFrame = null;
+  }
   
   if (e.touches.length === 1) {
     const touch = e.touches[0];
@@ -427,7 +500,10 @@ interactiveContainer.addEventListener('touchend', (e) => {
     
     if (currentTime - lastTapTime < 300) {
       console.log("TOUCH: Doble toque detectado. Restableciendo la vista.");
-      setInitialView();
+      const oldZoomLevel = zoomLevel;
+      const oldPanX = panX;
+      const oldPanY = panY;
+      animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
       lastTapTime = 0;
     } else {
       const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -481,4 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (instructionsMobile) instructionsMobile.style.display = 'none';
         if (instructionsPC) instructionsPC.style.display = 'block';
     }
+});
+window.addEventListener('resize', () => {
+    setInitialView();
 });
