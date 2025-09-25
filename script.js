@@ -1,4 +1,12 @@
 // =======================================================
+// FUNCIONES DE UTILIDAD
+// =======================================================
+function isMobileDevice() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || ('ontouchstart' in window);
+}
+
+// =======================================================
 // VARIABLES Y ELEMENTOS DEL DOM
 // =======================================================
 const interactiveContainer = document.querySelector('.interactive-container');
@@ -11,6 +19,10 @@ const modalFlag = document.getElementById('modalFlag');
 const modalTitle = document.getElementById('modalTitle');
 const modalMenu = document.getElementById('modalMenu');
 const modalInfo = document.getElementById('modalInfo');
+
+// Nuevas variables para las instrucciones
+const instructionsMobile = document.getElementById('instructions-mobile');
+const instructionsPC = document.getElementById('instructions-pc');
 
 // =======================================================
 // GESTIÓN DE TRANSFORMACIONES Y ESTADO
@@ -34,11 +46,6 @@ let touchStartY = 0;
 let hasMoved = false;
 let isMultiTouch = false;
 let lastTapTime = 0;
-
-// =======================================================
-// SOLUCIÓN PARA EVITAR QUE EL MODAL SE CIERRE AL INSTANTE
-// =======================================================
-let isModalBeingShown = false; // Nueva variable de estado
 
 // =======================================================
 // DATOS DE LOS STANDS
@@ -107,21 +114,26 @@ function calculateMinZoom() {
   return Math.min(scaleX, scaleY) * 0.9;
 }
 
+// NUEVA función para establecer la vista inicial basada en coordenadas
 function setInitialView() {
     const containerRect = interactiveContainer.getBoundingClientRect();
 
+    // Coordenadas de la zona que quieres mostrar (del plano SVG)
     const viewboxX = 215.9;
     const viewboxY = 82.9;
     const viewboxWidth = 1401.3;
     const viewboxHeight = 2240.3;
 
+    // Calcular el nivel de zoom para que el área encaje en el contenedor
     const scaleX = containerRect.width / viewboxWidth;
     const scaleY = containerRect.height / viewboxHeight;
     zoomLevel = Math.min(scaleX, scaleY);
     
+    // Calcular la posición para centrar el área
     const centeredPanX = (containerRect.width - viewboxWidth * zoomLevel) / 2;
     const centeredPanY = (containerRect.height - viewboxHeight * zoomLevel) / 2;
     
+    // Ajustar el paneo para mover el punto de origen
     panX = centeredPanX - (viewboxX * zoomLevel);
     panY = centeredPanY - (viewboxY * zoomLevel);
     
@@ -222,12 +234,6 @@ function showModal(area) {
   }
   
   modal.style.display = 'flex';
-  
-  // Establecer la bandera para ignorar el siguiente evento de clic
-  isModalBeingShown = true;
-  setTimeout(() => {
-    isModalBeingShown = false;
-  }, 50); // El tiempo es suficiente para que el evento de clic se dispare y se ignore.
 }
 
 function hideModal() { 
@@ -253,12 +259,7 @@ window.addEventListener('resize', () => {
 });
 closeBtn.onclick = hideModal;
 
-// Modificado para evitar que el modal se cierre inmediatamente
 window.onclick = e => { 
-  if (isModalBeingShown) {
-    console.log("AVISO: Clic de propagación detectado. Se ignora para evitar cierre inmediato del modal.");
-    return;
-  }
   if (e.target === modal) hideModal(); 
 };
 
@@ -370,6 +371,7 @@ interactiveContainer.addEventListener('touchmove', (e) => {
       applyTransform();
       
       e.preventDefault();
+      // console.log("TOUCH: Moviendo mapa. hasMoved:", hasMoved); // Descomenta si necesitas un registro más detallado
     }
   } else if (e.touches.length === 2 && initialPinchDistance > 0) {
     hasMoved = true;
@@ -396,6 +398,7 @@ interactiveContainer.addEventListener('touchmove', (e) => {
     
     applyTransform();
     e.preventDefault();
+    // console.log("TOUCH: Zooming. Zoom Level:", zoomLevel); // Descomenta si necesitas un registro más detallado
   }
 }, { passive: false });
 
@@ -456,3 +459,26 @@ interactiveContainer.addEventListener('touchend', (e) => {
   isPanning = false;
   hasMoved = false;
 }, { passive: true });
+
+
+// =======================================================
+// INICIALIZACIÓN
+// =======================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Crear todos los stands
+    interactiveAreasData.forEach(createInteractiveArea);
+  
+    // Pequeño retraso para asegurar que el DOM esté completamente renderizado
+    setTimeout(() => {
+        setInitialView();
+    }, 100);
+
+    // Muestra las instrucciones correctas al cargar la página
+    if (isMobileDevice()) {
+        if (instructionsMobile) instructionsMobile.style.display = 'block';
+        if (instructionsPC) instructionsPC.style.display = 'none';
+    } else {
+        if (instructionsMobile) instructionsMobile.style.display = 'none';
+        if (instructionsPC) instructionsPC.style.display = 'block';
+    }
+});

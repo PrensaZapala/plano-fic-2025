@@ -221,3 +221,18 @@ header img {
   border-radius: 6px;
   font-size: 14px;
 }
+
+/* Estilos por defecto para móviles */
+#instructions-pc {
+  display: none;
+}
+
+/* Media query para pantallas de PC (mayores a 768px) */
+@media (min-width: 768px) {
+  #instructions-mobile {
+    display: none;
+  }
+  #instructions-pc {
+    display: block;
+  }
+}
