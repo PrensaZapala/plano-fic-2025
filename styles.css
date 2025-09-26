@@ -65,7 +65,7 @@ header img {
   cursor: grab;
   border-radius: var(--border-radius);
   background: #fafafa;
-  aspect-ratio: 3916.9 / 2326.6;
+  aspect-ratio: 3916 / 2586;
 }
 
 .controls {
@@ -111,8 +111,8 @@ header img {
 .container {
   border-radius: var(--border-radius);
   position: absolute;
-  width: 3916.9px;
-  height: 2326.6px;
+  width: 3916px;
+  height: 2326px;
   transform-origin: 0 0;
   background: url("plano-fic.svg") no-repeat center/cover;
   image-rendering: optimizeQuality;
@@ -128,8 +128,6 @@ header img {
 
 .interactive-area {
   position: absolute;
-  width: 58px;
-  height: 58px;
   background: rgb(255, 255, 255);
   border: 1px solid #000;
   display: flex;
