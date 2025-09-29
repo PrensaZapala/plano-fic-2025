@@ -428,7 +428,23 @@ resetViewBtn.addEventListener('click', () => {
 });
 
 
-closeBtn.onclick = hideModal;
+if (closeBtn) {
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    hideModal();
+  });
+}
+
+if (modal) {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      e.stopPropagation();
+      hideModal();
+    }
+  });
+}
+
+
 
 window.onclick = e => { 
   if (e.target === modal) hideModal(); 
