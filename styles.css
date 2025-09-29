@@ -174,7 +174,8 @@ header img {
   opacity: 1;
 }
 
-.interactive-area:hover, .interactive-area:focus {
+.interactive-area:not(.invisible-service):hover, 
+.interactive-area:not(.invisible-service):focus {
   background: var(--interactive-hover);
   transform: scale(1.1);
 }
@@ -250,4 +251,68 @@ header img {
   background: #f0f0f0;
   border-radius: 6px;
   font-size: 14px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Nuevos estilos para el tooltip de los servicios y sus areas invisibles */
+/* ------------------------------------------------------------------ */
+
+.tooltip-text {
+  position: fixed;
+  z-index: 1000;
+  background: rgba(30, 30, 30, 0.85);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -120%) scale(0.95);
+  opacity: 0;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: 
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.tooltip-text::before {
+  content: '';
+  position: absolute;
+  /* El borde crea la forma triangular. El color debe coincidir con el fondo del tooltip. */
+  border: 8px solid transparent; 
+  border-top-color: rgba(30, 30, 30, 0.85); /* La flecha apunta hacia abajo */
+  bottom: -16px; /* Posiciona la flecha en la parte inferior del tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-text.show {
+  opacity: 1;
+  transform: translate(-50%, -130%) scale(1);
+}
+
+/* Clases para que los botones de servicio sean invisibles y mantengan la interactividad */
+.interactive-area.invisible-service {
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: default;
+  transform: none !important; /* Desactiva el "hover" de escala */
+  pointer-events: auto; /* Mantiene la interactividad del elemento */
+}
+
+.interactive-area.invisible-service .stand-name,
+.interactive-area.invisible-service .stand-flag {
+  display: none !important;
+}
+
+/* Asegura que los estilos de hover y focus solo se apliquen a los stands */
+.interactive-area:hover, .interactive-area:focus {
+  background: var(--interactive-hover);
+  transform: scale(1.1);
+}
+
+.invisible-service:hover {
+  background: transparent !important; /* Desactiva el fondo de hover */
 }

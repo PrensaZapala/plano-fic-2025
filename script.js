@@ -29,6 +29,10 @@ const zoomInBtn = document.getElementById('zoom-in');
 const zoomOutBtn = document.getElementById('zoom-out');
 const resetViewBtn = document.getElementById('reset-view');
 
+// Nueva variable para el tooltip
+let tooltip = null;
+let tooltipTimeout = null;
+
 
 // =======================================================
 // GESTIÓN DE TRANSFORMACIONES Y ESTADO
@@ -63,61 +67,82 @@ let initialPanY = 0;
 // DATOS DE LOS STANDS
 // =======================================================
 const interactiveAreasData = [
-  { id: "stand-1", x: 1310.6, y: 1199.6, width: 58, height: 117, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-2", x: 543.6, y: 280.6, width: 117, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-3", x: 661.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-4", x: 720.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-5", x: 779.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-6", x: 838.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-7", x: 897.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-8", x: 850.1, y: 768.9, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-9", x: 909.1, y: 768.9, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-10", x: 968.1, y: 768.9, width: 58, height: 117, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-11", x: 956.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-12", x: 1015.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-13", x: 1074.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-14", x: 1133.6, y: 280.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-15", x: 1192.6, y: 280.6, width: 117, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-16", x: 1310.6, y: 339.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-17", x: 1310.6, y: 398.6, width: 58, height: 117, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-18", x: 1310.6, y: 516.6, width: 58, height: 117, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-19", x: 1310.6, y: 845.6, width: 58, height: 235, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-20", x: 1310.6, y: 1081.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-21", x: 1310.6, y: 1140.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-22", x: 1192.6, y: 1317.6, width: 117, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-23", x: 1133.6, y: 1317.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-24", x: 1074.6, y: 1317.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-25", x: 661.6, y: 1317.6, width: 117, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-26", x: 602.6, y: 1317.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-27", x: 356.2, y: 1494.1, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-28", x: 356.2, y: 1697.4, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-29", x: 356.2, y: 1957.1, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-30", x: 535.1, y: 2236.7, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-31", x: 1002.8, y: 2236.7, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-32", x: 1412.5, y: 2038.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-33", x: 1412.5, y: 1728, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-34", x: 1412.5, y: 1528.6, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-35", x: 1412.5, y: 1655.2, width: 58, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-36", x: 1196.6, y: 2236.7, width: 78, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-37", x: 728.8, y: 2236.7, width: 78.5, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-38", x: 814.9, y: 2236.7, width: 116.3, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-39", x: 1072.2, y: 2236.7, width: 116.3, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-40", x: 940.2, y: 2236.7, width: 55.3, height: 38.4, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-41", x: 374.7, y: 1894.8, width: 39.5, height: 55.1, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-42", x: 374.7, y: 2150.2, width: 39.5, height: 60, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-43", x: 374.4, y: 1575.8, width: 39.9, height: 117.8, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-44", x: 374.4, y: 1765.5, width: 39.9, height: 117.8, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-45", x: 374.4, y: 2022.4, width: 39.9, height: 117.8, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-46", x: 1412.5, y: 2102.4, width: 39.9, height: 137.3, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-47", x: 1412.5, y: 1919.7, width: 39.9, height: 109.9, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-48", x: 1412.5, y: 1790.2, width: 39.9, height: 117.9, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-49", x: 1412.5, y: 1593.2, width: 39.9, height: 55.2, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-50", x: 413.9, y: 2236.7, width: 117.8, height: 39.9, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-51", x: 603.4, y: 2236.7, width: 117.8, height: 39.9, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-52", x: 1278.6, y: 2236.7, width: 117.8, height: 39.9, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-53", x: 485.9, y: 1317.6, width: 115.7, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" },
-  { id: "stand-54", x: 850.1, y: 827.9, width: 117, height: 58, name: "", flag: "https://flagcdn.com/w80/zz.png", info: "" }
+  { id: "stand-1", x: 1310.6, y: 1199.6, width: 58, height: 117, name: "Stand 1", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 1." },
+  { id: "stand-2", x: 543.6, y: 280.6, width: 117, height: 58, name: "Stand 2", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 2." },
+  { id: "stand-3", x: 661.6, y: 280.6, width: 58, height: 58, name: "Stand 3", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 3." },
+  { id: "stand-4", x: 720.6, y: 280.6, width: 58, height: 58, name: "Stand 4", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 4." },
+  { id: "stand-5", x: 779.6, y: 280.6, width: 58, height: 58, name: "Stand 5", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 5." },
+  { id: "stand-6", x: 838.6, y: 280.6, width: 58, height: 58, name: "Stand 6", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 6." },
+  { id: "stand-7", x: 897.6, y: 280.6, width: 58, height: 58, name: "Stand 7", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 7." },
+  { id: "stand-8", x: 850.1, y: 768.9, width: 58, height: 58, name: "Stand 8", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 8." },
+  { id: "stand-9", x: 909.1, y: 768.9, width: 58, height: 58, name: "Stand 9", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 9." },
+  { id: "stand-10", x: 968.1, y: 768.9, width: 58, height: 117, name: "Stand 10", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 10." },
+  { id: "stand-11", x: 956.6, y: 280.6, width: 58, height: 58, name: "Stand 11", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 11." },
+  { id: "stand-12", x: 1015.6, y: 280.6, width: 58, height: 58, name: "Stand 12", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 12." },
+  { id: "stand-13", x: 1074.6, y: 280.6, width: 58, height: 58, name: "Stand 13", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 13." },
+  { id: "stand-14", x: 1133.6, y: 280.6, width: 58, height: 58, name: "Stand 14", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 14." },
+  { id: "stand-15", x: 1192.6, y: 280.6, width: 117, height: 58, name: "Stand 15", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 15." },
+  { id: "stand-16", x: 1310.6, y: 339.6, width: 58, height: 58, name: "Stand 16", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 16." },
+  { id: "stand-17", x: 1310.6, y: 398.6, width: 58, height: 117, name: "Stand 17", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 17." },
+  { id: "stand-18", x: 1310.6, y: 516.6, width: 58, height: 117, name: "Stand 18", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 18." },
+  { id: "stand-19", x: 1310.6, y: 845.6, width: 58, height: 235, name: "Stand 19", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 19." },
+  { id: "stand-20", x: 1310.6, y: 1081.6, width: 58, height: 58, name: "Stand 20", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 20." },
+  { id: "stand-21", x: 1310.6, y: 1140.6, width: 58, height: 58, name: "Stand 21", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 21." },
+  { id: "stand-22", x: 1192.6, y: 1317.6, width: 117, height: 58, name: "Stand 22", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 22." },
+  { id: "stand-23", x: 1133.6, y: 1317.6, width: 58, height: 58, name: "Stand 23", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 23." },
+  { id: "stand-24", x: 1074.6, y: 1317.6, width: 58, height: 58, name: "Stand 24", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 24." },
+  { id: "stand-25", x: 661.6, y: 1317.6, width: 117, height: 58, name: "Stand 25", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 25." },
+  { id: "stand-26", x: 602.6, y: 1317.6, width: 58, height: 58, name: "Stand 26", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 26." },
+  { id: "stand-27", x: 356.2, y: 1494.1, width: 58, height: 58, name: "Stand 27", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 27." },
+  { id: "stand-28", x: 356.2, y: 1683.9, width: 58, height: 58, name: "Stand 28", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 28." },
+  { id: "stand-29", x: 356.2, y: 1935.8, width: 58, height: 58, name: "Stand 29", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 29." },
+  { id: "stand-30", x: 544.4, y: 2218.3, width: 58, height: 58, name: "Stand 30", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 30." },
+  { id: "stand-31", x: 1005.3, y: 2218.3, width: 58, height: 58, name: "Stand 31", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 31." },
+  { id: "stand-32", x: 1412.5, y: 1993.1, width: 58, height: 58, name: "Stand 32", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 32." },
+  { id: "stand-33", x: 1412.5, y: 1686.3, width: 58, height: 58, name: "Stand 33", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 33." },
+  { id: "stand-34", x: 1412.5, y: 1494.1, width: 58, height: 58, name: "Stand 34", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 34." },
+  { id: "stand-35", x: 1412.5, y: 1621.3, width: 58, height: 58, name: "Stand 35", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 35." },
+  { id: "stand-36", x: 1193.6, y: 2218.3, width: 78, height: 58, name: "Stand 36", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 36." },
+  { id: "stand-37", x: 734.2, y: 2218.3, width: 78.5, height: 58, name: "Stand 37", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 37." },
+  { id: "stand-38", x: 819.7, y: 2218.3, width: 116.3, height: 58, name: "Stand 38", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 38." },
+  { id: "stand-39", x: 1070.3, y: 2218.3, width: 116.3, height: 58, name: "Stand 39", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 39." },
+  { id: "stand-40", x: 943, y: 2218.3, width: 55.3, height: 38.4, name: "Stand 40", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 40." },
+  { id: "stand-41", x: 374.7, y: 1873.7, width: 39.5, height: 55.1, name: "Stand 41", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 41." },
+  { id: "stand-42", x: 374.7, y: 2125.6, width: 39.5, height: 60, name: "Stand 42", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 42." },
+  { id: "stand-43", x: 374.4, y: 1559.1, width: 39.9, height: 117.8, name: "Stand 43", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 43." },
+  { id: "stand-44", x: 374.4, y: 1748.9, width: 39.9, height: 117.8, name: "Stand 44", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 44." },
+  { id: "stand-45", x: 374.4, y: 2000.8, width: 39.9, height: 117.8, name: "Stand 45", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 45." },
+  { id: "stand-46", x: 1412.5, y: 2058.1, width: 39.9, height: 137.3, name: "Stand 46", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 46." },
+  { id: "stand-47", x: 1412.5, y: 1876.2, width: 39.9, height: 109.9, name: "Stand 47", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 47." },
+  { id: "stand-48", x: 1412.5, y: 1751.3, width: 39.9, height: 117.9, name: "Stand 48", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 48." },
+  { id: "stand-49", x: 1412.5, y: 1559.1, width: 39.9, height: 55.2, name: "Stand 49", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 49." },
+  { id: "stand-50", x: 419.6, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 50", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 50." },
+  { id: "stand-51", x: 609.4, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 51", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 51." },
+  { id: "stand-52", x: 1278.6, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 52", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 52." },
+  { id: "stand-53", x: 485.9, y: 1317.6, width: 115.7, height: 58, name: "Stand 53", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 53." },
+  { id: "stand-54", x: 850.1, y: 827.9, width: 117, height: 58, name: "Stand 54", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 54." },
 ];
+
+// =======================================================
+// DATOS DE LOS SERVICIOS (separados)
+// =======================================================
+const serviceAreasData = [
+  { id: "mercadito-productores", x: 1644.7, y: 600.3, width: 1516.2, height: 205.4, name: "Mercadito de Productores", flag: "", info: "" },
+  { id: "banos", x: 1642.4, y: 78.1, width: 647.1, height: 54, name: "Baños", flag: "", info: "" },
+  { id: "escenario-gastronomico", x: 401.1, y: 1022.9, width: 93.1, height: 205.2, name: "Escenario Gastronómico", flag: "", info: "" },
+  { id: "patio-fuegos", x: 637, y: 1870, width: 557.4, height: 75.5, name: "Patio de Fuegos", flag: "", info: "" },
+  { id: "bomberos-1", x: 83.4, y: 218.4, width: 136.5, height: 55.9, name: "Bomberos", flag: "", info: "" },
+  { id: "bomberos-2", x: 1518, y: 2126.6, width: 136.5, height: 55.9, name: "Bomberos", flag: "", info: "" },
+  { id: "enfermeria", x: 1529.6, y: 1096.2, width: 61.6, height: 61.6, name: "Enfermería", flag: "", info: "" },
+  { id: "escenario-cultural", x: 401.1, y: 399.8, width: 121.5, height: 269, name: "Escenario Cultural", flag: "", info: "" },
+  { id: "policia", x: 96.4, y: 292.6, width: 116.3, height: 44.6, name: "Policía", flag: "", info: "" },
+  { id: "entrada-foodtrucks", x: 836.4, y: 1433.5, width: 158.6, height: 22.1, name: "Entrada Foodtrucks y Patio de Fuegos", flag: "", info: "" },
+  { id: "entrada-1", x: 1420.9, y: 652, width: 18.8, height: 177.2, name: "Entrada", flag: "", info: "" },
+  { id: "entrada-2", x: 3550.6, y: 667.6, width: 29.6, height: 134.5, name: "Entrada", flag: "", info: "" },
+  { id: "ambulancia-1", x: 83.4, y: 149.9, width: 136.5, height: 55.9, name: "Ambulancia", flag: "", info: "" },
+  { id: "ambulancia-2", x: 1518, y: 2058.1, width: 136.5, height: 55.9, name: "Ambulancia", flag: "", info: "" },
+];
+
 
 // =======================================================
 // FUNCIONES
@@ -136,34 +161,22 @@ function calculateMinZoom() {
   return Math.min(scaleX, scaleY) * 0.9;
 }
 
-// NUEVA función para establecer la vista inicial basada en coordenadas
 function setInitialView() {
     const containerRect = interactiveContainer.getBoundingClientRect();
-
-    // Coordenadas de la zona que quieres mostrar (del plano SVG)
     const viewboxX = 215.9;
     const viewboxY = 82.9;
     const viewboxWidth = 1400;
     const viewboxHeight = 2300;
-
-    // Calcular el nivel de zoom para que el área encaje en el contenedor
     const scaleX = containerRect.width / viewboxWidth;
     const scaleY = containerRect.height / viewboxHeight;
     initialZoomLevel = Math.min(scaleX, scaleY);
-    
-    // Calcular la posición para centrar el área
     const centeredPanX = (containerRect.width - viewboxWidth * initialZoomLevel) / 2;
     const centeredPanY = (containerRect.height - viewboxHeight * initialZoomLevel) / 2;
-    
-    // Ajustar el paneo para mover el punto de origen
     initialPanX = centeredPanX - (viewboxX * initialZoomLevel);
     initialPanY = centeredPanY - (viewboxY * initialZoomLevel);
-    
-    // Aplicar la vista inicial
     zoomLevel = initialZoomLevel;
     panX = initialPanX;
     panY = initialPanY;
-    
     applyTransform();
     console.log("INFO: Vista inicial aplicada. Zoom:", zoomLevel, "Pan:", panX, panY);
 }
@@ -210,16 +223,68 @@ function updateTextVisibility() {
   });
 }
 
+function showTooltip(area, event, pinned = false) {
+  // 1. Oculta cualquier tooltip existente y limpia cualquier timeout anterior
+  hideTooltip(); 
+
+  // No hacer nada si el área no tiene nombre
+  if (!area.name) return; 
+
+  // Crea el elemento del tooltip
+  tooltip = document.createElement('div');
+  tooltip.textContent = area.name;
+  tooltip.className = 'tooltip-text show'; 
+  
+  if (pinned) {
+    tooltip.classList.add('pinned');
+  }
+  
+  // Posiciona el tooltip
+  if (event.clientX && event.clientY) {
+    tooltip.style.left = `${event.clientX}px`;
+    tooltip.style.top = `${event.clientY - 30}px`;
+  } else if (event.touches && event.touches[0]) {
+    tooltip.style.left = `${event.touches[0].clientX}px`;
+    tooltip.style.top = `${event.touches[0].clientY - 30}px`;
+  }
+
+  // Agrega el tooltip al contenedor principal para que sea visible
+  interactiveContainer.appendChild(tooltip);
+  
+  // 2. Establece un nuevo timeout SÓLO si el tooltip está fijado
+  if (pinned) {
+    tooltipTimeout = setTimeout(() => {
+      hideTooltip();
+    }, 2000); // 2 segundos
+  }
+}
+
+
+function hideTooltip() {
+  if (tooltipTimeout) {
+    clearTimeout(tooltipTimeout);
+    tooltipTimeout = null;
+  }
+  if (tooltip) {
+    tooltip.remove();
+    tooltip = null;
+  }
+}
+
 function createInteractiveArea(area) {
   const areaElement = document.createElement('div');
   areaElement.id = area.id;
   areaElement.classList.add('interactive-area');
+
+  const isService = serviceAreasData.some(service => service.id === area.id);
+  if (isService) {
+    areaElement.classList.add('invisible-service');
+  }
+
   areaElement.style.left = `${area.x}px`;
   areaElement.style.top = `${area.y}px`;
-  areaElement.style.left = `${area.x}px`;
-areaElement.style.top = `${area.y}px`;
-areaElement.style.width = `${area.width}px`;
-areaElement.style.height = `${area.height}px`;
+  areaElement.style.width = `${area.width}px`;
+  areaElement.style.height = `${area.height}px`;
 
   const flagImg = document.createElement('img');
   flagImg.src = area.flag;
@@ -228,23 +293,47 @@ areaElement.style.height = `${area.height}px`;
   flagImg.loading = 'lazy';
 
   const nameDiv = document.createElement('div');
-  if (parseInt(area.id.replace('stand-', '')) > 35) {
-    areaElement.classList.add('interactive-area-rect');
-  }
   nameDiv.className = 'stand-name';
   nameDiv.textContent = area.name;
 
   areaElement.appendChild(flagImg);
   areaElement.appendChild(nameDiv);
-  
-  // AÑADIR LOS STANDS AL CONTENEDOR QUE SE MUEVE
+
   container.appendChild(areaElement);
 
-  // Solo agregar click para PC (no afecta en móviles con touchstart)
-  areaElement.addEventListener('click', (e) => { 
-    e.stopPropagation(); 
-    showModal(area); 
-  });
+  // Lógica de eventos para stands y servicios
+   if (isService) {
+    // Para servicios: mostrar tooltip al pasar el mouse (PC)
+    areaElement.addEventListener('mouseenter', (e) => {
+      // Pasa `areaElement` a la función
+      showTooltip(area, e, areaElement); 
+    });
+    // ... el resto de la lógica de mouseleave es la misma ...
+    
+    // Click en PC para fijar el tooltip 3 segundos
+    areaElement.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Pasa `areaElement` a la función
+      showTooltip(area, e, areaElement, true);
+    });
+
+    // Se agrega el evento 'touchstart' para mostrar el tooltip en móviles (fijado por 3 segundos)
+    areaElement.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      hideTooltip();
+      // Pasa `areaElement` a la función
+      showTooltip(area, e, areaElement, true);
+    }, {
+      passive: false
+    });
+
+  } else {
+    // Para stands: abrir modal
+    areaElement.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showModal(area);
+    });
+  }
 }
 
 function showModal(area) {
@@ -284,20 +373,15 @@ zoomInBtn.addEventListener('click', () => {
   const oldZoomLevel = zoomLevel;
   const oldPanX = panX;
   const oldPanY = panY;
-
   const containerRect = interactiveContainer.getBoundingClientRect();
   const centerX = containerRect.width / 2;
   const centerY = containerRect.height / 2;
   const zoomFactor = 1.2;
-
   const targetZoom = Math.max(minZoomLevel, Math.min(zoomLevel * zoomFactor, 12));
-
   const mapX = (centerX - oldPanX) / oldZoomLevel;
   const mapY = (centerY - oldPanY) / oldZoomLevel;
-
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
-
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
 });
 
@@ -305,20 +389,15 @@ zoomOutBtn.addEventListener('click', () => {
   const oldZoomLevel = zoomLevel;
   const oldPanX = panX;
   const oldPanY = panY;
-
   const containerRect = interactiveContainer.getBoundingClientRect();
   const centerX = containerRect.width / 2;
   const centerY = containerRect.height / 2;
   const zoomFactor = 0.8;
-
   const targetZoom = Math.max(minZoomLevel, Math.min(zoomLevel * zoomFactor, 12));
-
   const mapX = (centerX - oldPanX) / oldZoomLevel;
   const mapY = (centerY - oldPanY) / oldZoomLevel;
-
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
-
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
 });
 
@@ -367,6 +446,7 @@ container.addEventListener('mousedown', (e) => {
     startY = e.clientY - panY;
     e.preventDefault();
     console.log("PAN: Mousedown detectado. Iniciando paneo.");
+    hideTooltip();
   }
 });
 
@@ -381,30 +461,26 @@ window.addEventListener('mousemove', (e) => {
   panX = e.clientX - startX;
   panY = e.clientY - startY;
   applyTransform();
+  // Call hideTooltip() to dismiss the tooltip when panning
+  hideTooltip(); 
 });
 
 container.addEventListener('wheel', (e) => {
   e.preventDefault();
   const zoomSpeed = 0.3;
-
   const oldZoomLevel = zoomLevel;
   const oldPanX = panX;
   const oldPanY = panY;
-
   let targetZoom = e.deltaY < 0 ? zoomLevel + zoomSpeed : zoomLevel - zoomSpeed;
   targetZoom = Math.max(0.2, Math.min(targetZoom, 12));
-
   const cursorX = e.clientX;
   const cursorY = e.clientY;
-
   const mapX = (cursorX - panX) / oldZoomLevel;
   const mapY = (cursorY - panY) / oldZoomLevel;
-
   const targetPanX = cursorX - mapX * targetZoom;
   const targetPanY = cursorY - mapY * targetZoom;
-
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
-}, { passive: false });
+});
 
 // ----------------------------------------------------
 // TOUCH EVENTS (PANEO Y ZOOM)
@@ -458,7 +534,7 @@ interactiveContainer.addEventListener('touchmove', (e) => {
       applyTransform();
       
       e.preventDefault();
-      // console.log("TOUCH: Moviendo mapa. hasMoved:", hasMoved); // Descomenta si necesitas un registro más detallado
+      hideTooltip(); 
     }
   } else if (e.touches.length === 2 && initialPinchDistance > 0) {
     hasMoved = true;
@@ -485,7 +561,6 @@ interactiveContainer.addEventListener('touchmove', (e) => {
     
     applyTransform();
     e.preventDefault();
-    // console.log("TOUCH: Zooming. Zoom Level:", zoomLevel); // Descomenta si necesitas un registro más detallado
   }
 }, { passive: false });
 
@@ -525,10 +600,16 @@ interactiveContainer.addEventListener('touchend', (e) => {
         const standElement = element.closest('.interactive-area');
         if (standElement) {
           const standId = standElement.id;
-          const standData = interactiveAreasData.find(area => area.id === standId);
+          const standData = interactiveAreasData.concat(serviceAreasData).find(area => area.id === standId);
           if (standData) {
-            console.log("TOUCH: ¡Stand encontrado! ID:", standId);
-            showModal(standData);
+              const isService = serviceAreasData.some(service => service.id === standId);
+              if (isService) {
+                  // Si es un servicio, muestra el tooltip en el toque
+                  showTooltip(standData, e.changedTouches[0]);
+              } else {
+                  // Si es un stand, muestra el modal
+                  showModal(standData);
+              }
           }
         } else {
           console.log("TOUCH: No se encontró un stand en el punto de toque.");
@@ -536,8 +617,8 @@ interactiveContainer.addEventListener('touchend', (e) => {
       } else {
         console.log("TOUCH: No se encontró ningún elemento en el punto de toque.");
       }
-      lastTapTime = currentTime;
     }
+    lastTapTime = currentTime;
   }
 
   if (zoomLevel < minZoomLevel) {
@@ -555,15 +636,11 @@ interactiveContainer.addEventListener('touchend', (e) => {
 // INICIALIZACIÓN
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Crear todos los stands
-    interactiveAreasData.forEach(createInteractiveArea);
-  
-    // Pequeño retraso para asegurar que el DOM esté completamente renderizado
+    const allAreasData = interactiveAreasData.concat(serviceAreasData);
+    allAreasData.forEach(createInteractiveArea);
     setTimeout(() => {
         setInitialView();
     }, 100);
-
-    // Muestra las instrucciones correctas al cargar la página
     if (isMobileDevice()) {
         if (instructionsMobile) instructionsMobile.style.display = 'block';
         if (instructionsPC) instructionsPC.style.display = 'none';
@@ -572,6 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (instructionsPC) instructionsPC.style.display = 'block';
     }
 });
+
 window.addEventListener('resize', () => {
     setInitialView();
 });
