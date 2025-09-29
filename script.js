@@ -67,61 +67,101 @@ let initialPanY = 0;
 // DATOS DE LOS STANDS
 // =======================================================
 const interactiveAreasData = [
-  { id: "stand-1", x: 1310.6, y: 1199.6, width: 58, height: 117, name: "Stand 1", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 1." },
-  { id: "stand-2", x: 543.6, y: 280.6, width: 117, height: 58, name: "Stand 2", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 2." },
-  { id: "stand-3", x: 661.6, y: 280.6, width: 58, height: 58, name: "Stand 3", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 3." },
-  { id: "stand-4", x: 720.6, y: 280.6, width: 58, height: 58, name: "Stand 4", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 4." },
-  { id: "stand-5", x: 779.6, y: 280.6, width: 58, height: 58, name: "Stand 5", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 5." },
-  { id: "stand-6", x: 838.6, y: 280.6, width: 58, height: 58, name: "Stand 6", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 6." },
-  { id: "stand-7", x: 897.6, y: 280.6, width: 58, height: 58, name: "Stand 7", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 7." },
-  { id: "stand-8", x: 850.1, y: 768.9, width: 58, height: 58, name: "Stand 8", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 8." },
-  { id: "stand-9", x: 909.1, y: 768.9, width: 58, height: 58, name: "Stand 9", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 9." },
-  { id: "stand-10", x: 968.1, y: 768.9, width: 58, height: 117, name: "Stand 10", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 10." },
-  { id: "stand-11", x: 956.6, y: 280.6, width: 58, height: 58, name: "Stand 11", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 11." },
-  { id: "stand-12", x: 1015.6, y: 280.6, width: 58, height: 58, name: "Stand 12", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 12." },
-  { id: "stand-13", x: 1074.6, y: 280.6, width: 58, height: 58, name: "Stand 13", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 13." },
-  { id: "stand-14", x: 1133.6, y: 280.6, width: 58, height: 58, name: "Stand 14", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 14." },
-  { id: "stand-15", x: 1192.6, y: 280.6, width: 117, height: 58, name: "Stand 15", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 15." },
-  { id: "stand-16", x: 1310.6, y: 339.6, width: 58, height: 58, name: "Stand 16", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 16." },
-  { id: "stand-17", x: 1310.6, y: 398.6, width: 58, height: 117, name: "Stand 17", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 17." },
-  { id: "stand-18", x: 1310.6, y: 516.6, width: 58, height: 117, name: "Stand 18", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 18." },
-  { id: "stand-19", x: 1310.6, y: 845.6, width: 58, height: 235, name: "Stand 19", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 19." },
-  { id: "stand-20", x: 1310.6, y: 1081.6, width: 58, height: 58, name: "Stand 20", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 20." },
-  { id: "stand-21", x: 1310.6, y: 1140.6, width: 58, height: 58, name: "Stand 21", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 21." },
-  { id: "stand-22", x: 1192.6, y: 1317.6, width: 117, height: 58, name: "Stand 22", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 22." },
-  { id: "stand-23", x: 1133.6, y: 1317.6, width: 58, height: 58, name: "Stand 23", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 23." },
-  { id: "stand-24", x: 1074.6, y: 1317.6, width: 58, height: 58, name: "Stand 24", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 24." },
-  { id: "stand-25", x: 661.6, y: 1317.6, width: 117, height: 58, name: "Stand 25", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 25." },
-  { id: "stand-26", x: 602.6, y: 1317.6, width: 58, height: 58, name: "Stand 26", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 26." },
-  { id: "stand-27", x: 356.2, y: 1494.1, width: 58, height: 58, name: "Stand 27", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 27." },
-  { id: "stand-28", x: 356.2, y: 1683.9, width: 58, height: 58, name: "Stand 28", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 28." },
-  { id: "stand-29", x: 356.2, y: 1935.8, width: 58, height: 58, name: "Stand 29", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 29." },
-  { id: "stand-30", x: 544.4, y: 2218.3, width: 58, height: 58, name: "Stand 30", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 30." },
-  { id: "stand-31", x: 1005.3, y: 2218.3, width: 58, height: 58, name: "Stand 31", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 31." },
-  { id: "stand-32", x: 1412.5, y: 1993.1, width: 58, height: 58, name: "Stand 32", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 32." },
-  { id: "stand-33", x: 1412.5, y: 1686.3, width: 58, height: 58, name: "Stand 33", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 33." },
-  { id: "stand-34", x: 1412.5, y: 1494.1, width: 58, height: 58, name: "Stand 34", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 34." },
-  { id: "stand-35", x: 1412.5, y: 1621.3, width: 58, height: 58, name: "Stand 35", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 35." },
-  { id: "stand-36", x: 1193.6, y: 2218.3, width: 78, height: 58, name: "Stand 36", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 36." },
-  { id: "stand-37", x: 734.2, y: 2218.3, width: 78.5, height: 58, name: "Stand 37", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 37." },
-  { id: "stand-38", x: 819.7, y: 2218.3, width: 116.3, height: 58, name: "Stand 38", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 38." },
-  { id: "stand-39", x: 1070.3, y: 2218.3, width: 116.3, height: 58, name: "Stand 39", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 39." },
-  { id: "stand-40", x: 943, y: 2218.3, width: 55.3, height: 38.4, name: "Stand 40", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 40." },
-  { id: "stand-41", x: 374.7, y: 1873.7, width: 39.5, height: 55.1, name: "Stand 41", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 41." },
-  { id: "stand-42", x: 374.7, y: 2125.6, width: 39.5, height: 60, name: "Stand 42", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 42." },
-  { id: "stand-43", x: 374.4, y: 1559.1, width: 39.9, height: 117.8, name: "Stand 43", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 43." },
-  { id: "stand-44", x: 374.4, y: 1748.9, width: 39.9, height: 117.8, name: "Stand 44", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 44." },
-  { id: "stand-45", x: 374.4, y: 2000.8, width: 39.9, height: 117.8, name: "Stand 45", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 45." },
-  { id: "stand-46", x: 1412.5, y: 2058.1, width: 39.9, height: 137.3, name: "Stand 46", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 46." },
-  { id: "stand-47", x: 1412.5, y: 1876.2, width: 39.9, height: 109.9, name: "Stand 47", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 47." },
-  { id: "stand-48", x: 1412.5, y: 1751.3, width: 39.9, height: 117.9, name: "Stand 48", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 48." },
-  { id: "stand-49", x: 1412.5, y: 1559.1, width: 39.9, height: 55.2, name: "Stand 49", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 49." },
-  { id: "stand-50", x: 419.6, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 50", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 50." },
-  { id: "stand-51", x: 609.4, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 51", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 51." },
-  { id: "stand-52", x: 1278.6, y: 2218.3, width: 117.8, height: 39.9, name: "Stand 52", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 52." },
-  { id: "stand-53", x: 485.9, y: 1317.6, width: 115.7, height: 58, name: "Stand 53", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 53." },
-  { id: "stand-54", x: 850.1, y: 827.9, width: 117, height: 58, name: "Stand 54", flag: "https://flagcdn.com/w80/zz.png", info: "Información del stand 54." },
-];
+      // --- Stands (E1 - E28) ---
+{ id: "stand-1", x: 543.6, y: 280.6, width: 117, height: 58, name: "Stand 1", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 1." },
+    { id: "stand-2", x: 661.6, y: 280.6, width: 58, height: 58, name: "Stand 2", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 2." },
+    { id: "stand-3", x: 720.6, y: 280.6, width: 58, height: 58, name: "Stand 3", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 3." },
+    { id: "stand-4", x: 779.6, y: 280.6, width: 58, height: 58, name: "Stand 4", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 4." },
+    { id: "stand-5", x: 838.6, y: 280.6, width: 58, height: 58, name: "Stand 5", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 5." },
+    { id: "stand-6", x: 897.6, y: 280.6, width: 58, height: 58, name: "Stand 6", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 6." },
+    { id: "stand-7", x: 956.6, y: 280.6, width: 58, height: 58, name: "Stand 7", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 7." },
+    { id: "stand-8", x: 1015.6, y: 280.6, width: 58, height: 58, name: "Stand 8", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 8." },
+    { id: "stand-9", x: 1074.6, y: 280.6, width: 58, height: 58, name: "Stand 9", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 9." },
+    { id: "stand-10", x: 1133.6, y: 280.6, width: 58, height: 58, name: "Stand 10", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 10." },
+    { id: "stand-11", x: 1192.6, y: 280.6, width: 117, height: 58, name: "Stand 11", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 11." },
+    { id: "stand-12", x: 1310.6, y: 339.6, width: 58, height: 58, name: "Stand 12", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 12." },
+    { id: "stand-13", x: 1310.6, y: 398.6, width: 58, height: 117, name: "Stand 13", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 13." },
+    { id: "stand-14", x: 1310.6, y: 516.6, width: 58, height: 117, name: "Stand 14", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 14." },
+    { id: "stand-15", x: 1310.6, y: 845.6, width: 58, height: 235, name: "Stand 15", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 15." },
+    { id: "stand-16", x: 1310.6, y: 1081.6, width: 58, height: 58, name: "Stand 16", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 16." },
+    { id: "stand-17", x: 1310.6, y: 1140.6, width: 58, height: 58, name: "Stand 17", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 17." },
+    { id: "stand-18", x: 1310.6, y: 1199.6, width: 58, height: 117, name: "Stand 18", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 18." },
+    { id: "stand-19", x: 1192.6, y: 1317.6, width: 117, height: 58, name: "Stand 19", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 19." },
+    { id: "stand-20", x: 1133.6, y: 1317.6, width: 58, height: 58, name: "Stand 20", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 20." },
+    { id: "stand-21", x: 1074.6, y: 1317.6, width: 58, height: 58, name: "Stand 21", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 21." },
+    { id: "stand-22", x: 661.6, y: 1317.6, width: 117, height: 58, name: "Stand 22", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 22." },
+    { id: "stand-23", x: 602.6, y: 1317.6, width: 58, height: 58, name: "Stand 23", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 23." },
+    { id: "stand-24", x: 485.9, y: 1317.6, width: 115.7, height: 58, name: "Stand 24", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 24." },
+    { id: "stand-25", x: 968.1, y: 827.9, width: 58, height: 58, name: "Stand 25", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 25. (Parte rotada)" },
+    { id: "stand-26", x: 968.1, y: 768.9, width: 58, height: 58, name: "Stand 26", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 26. (Parte rotada)" },
+    { id: "stand-27", x: 850.1, y: 827.9, width: 117, height: 58, name: "Stand 27", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 27." },
+    { id: "stand-28", x: 850.1, y: 768.9, width: 117, height: 58, name: "Stand 28", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 28." },
+
+    // --- Foodtrucks (E29 - E47, múltiples colores) ---
+    // FT 29 (st3: Azul)
+    { id: "stand-29", x: 356.2, y: 1494.1, width: 58, height: 58, name: "Foodtruck 29 (Azul)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 29 - Color Azul." },
+
+    // FT 30 (st9: Verde Oscuro / Amarillo)
+    { id: "stand-30a", x: 356.2, y: 1683.9, width: 58, height: 58, name: "Foodtruck 30 (Verde/Amarillo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 30 - Parte A." },
+    { id: "stand-30b", x: 374.4, y: 1559.1, width: 39.9, height: 117.8, name: "Foodtruck 30 (Verde/Amarillo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 30 - Parte B." },
+
+    // FT 31 (st11: Morado)
+    { id: "stand-31a", x: 356.2, y: 1935.8, width: 58, height: 58, name: "Foodtruck 31 (Morado)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 31 - Parte A." },
+    { id: "stand-31b", x: 374.7, y: 1873.7, width: 39.5, height: 55.1, name: "Foodtruck 31 (Morado)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 31 - Parte B." },
+
+    // FT 32 (st16: Verde Menta)
+    { id: "stand-32", x: 374.7, y: 2125.6, width: 39.5, height: 60, name: "Foodtruck 32 (Verde Menta)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 32 - Color Verde Menta." },
+
+    // FT 33 (st7: Fucsia/Magenta)
+    { id: "stand-33", x: 374.4, y: 1748.9, width: 39.9, height: 117.8, name: "Foodtruck 33 (Fucsia/Magenta)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 33 - Color Fucsia/Magenta." },
+
+    // FT 34 (st2: Cian/Azul Claro)
+    { id: "stand-34", x: 374.4, y: 2000.8, width: 39.9, height: 117.8, name: "Foodtruck 34 (Cian/Azul Claro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 34 - Color Cian/Azul Claro." },
+
+    // FT 35 (st19: Gris Oscuro)
+    { id: "stand-35a", x: 1412.5, y: 1993.1, width: 58, height: 58, name: "Foodtruck 35 (Gris Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 35 - Parte A." },
+    { id: "stand-35b", x: 1412.5, y: 2058.1, width: 39.9, height: 137.3, name: "Foodtruck 35 (Gris Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 35 - Parte B." },
+
+    // FT 36 (st1: Verde Oliva)
+    { id: "stand-36a", x: 1412.5, y: 1686.3, width: 58, height: 58, name: "Foodtruck 36 (Verde Oliva)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 36 - Parte A." },
+    { id: "stand-36b", x: 1412.5, y: 1751.3, width: 39.9, height: 117.9, name: "Foodtruck 36 (Verde Oliva)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 36 - Parte B." },
+
+    // FT 37 (st6: Lila)
+    { id: "stand-37", x: 1412.5, y: 1494.1, width: 58, height: 58, name: "Foodtruck 37 (Lila)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 37 - Color Lila." },
+
+    // FT 38 (st17: Marrón Oscuro)
+    { id: "stand-38a", x: 1412.5, y: 1621.3, width: 58, height: 58, name: "Foodtruck 38 (Marrón Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 38 - Parte A." },
+    { id: "stand-38b", x: 1412.5, y: 1559.1, width: 39.9, height: 55.2, name: "Foodtruck 38 (Marrón Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 38 - Parte B." },
+
+    // FT 39 (st0: Rojo)
+    { id: "stand-39", x: 1412.5, y: 1876.2, width: 39.9, height: 109.9, name: "Foodtruck 39 (Rojo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 39 - Color Rojo." },
+
+    // FT 40 (st8: Verde Brillante)
+    { id: "stand-40a", x: 544.4, y: 2218.3, width: 58, height: 58, name: "Foodtruck 40 (Verde Brillante)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 40 - Parte A." },
+    { id: "stand-40b", x: 419.6, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 40 (Verde Brillante)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 40 - Parte B." },
+
+    // FT 41 (st14: Ciruela Oscuro)
+    { id: "stand-41a", x: 1005.3, y: 2218.3, width: 58, height: 58, name: "Foodtruck 41 (Ciruela Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 41 - Parte A." },
+    { id: "stand-41b", x: 943, y: 2218.3, width: 55.3, height: 38.4, name: "Foodtruck 41 (Ciruela Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 41 - Parte B." },
+
+    // FT 42 (st12: Naranja Cítrico)
+    { id: "stand-42", x: 1193.6, y: 2218.3, width: 78, height: 58, name: "Foodtruck 42 (Naranja Cítrico)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 42 - Color Naranja Cítrico." },
+
+    // FT 43 (st10: Azul Pizarra)
+    { id: "stand-43", x: 734.2, y: 2218.3, width: 78.5, height: 58, name: "Foodtruck 43 (Azul Pizarra)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 43 - Color Azul Pizarra." },
+
+    // FT 44 (st18: Verde Pálido)
+    { id: "stand-44", x: 819.7, y: 2218.3, width: 116.3, height: 58, name: "Foodtruck 44 (Verde Pálido)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 44 - Color Verde Pálido." },
+
+    // FT 45 (st5: Amarillo Limón)
+    { id: "stand-45", x: 1070.3, y: 2218.3, width: 116.3, height: 58, name: "Foodtruck 45 (Amarillo Limón)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 45 - Color Amarillo Limón." },
+
+    // FT 46 (st13: Verde Bosque)
+    { id: "stand-46", x: 609.4, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 46 (Verde Bosque)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 46 - Color Verde Bosque." },
+
+    // FT 47 (st4: Naranja Oscuro)
+    { id: "stand-47", x: 1278.6, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 47 (Naranja Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 47 - Color Naranja Oscuro." },];
+
 
 // =======================================================
 // DATOS DE LOS SERVICIOS (separados)

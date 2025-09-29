@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Evento Interactivo</title>
+    <!-- Carga de Tailwind CSS para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos generales para el fondo y la fuente */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+        }
+        /* Clase para los números dentro del SVG */
+        .number-label {
+            /* AUMENTO DEL TAMAÑO DE LA FUENTE para hacer los números más grandes */
+            font-size: 45px; 
+            font-family: Arial, sans-serif;
+            fill: #000;
+            text-anchor: middle;
+            dominant-baseline: central;
+            pointer-events: none; /* Asegura que el clic pase al rect */
+            font-weight: 700;
+        }
+        /* Resaltado al pasar el ratón */
+        .highlight:hover {
+            stroke: #ff0000; /* Borde rojo */
+            stroke-width: 5px;
+            cursor: pointer;
+        }
+        /* Definición de colores para el SVG (Foodtrucks) */
+        .st0 { fill: red; } .st1 { fill: #79b279; } .st2 { fill: #00c9ff; } .st3 { fill: blue; } .st4 { fill: #d36400; } .st5 { fill: #d0dd22; } .st6 { fill: #c78bcc; } .st7 { fill: #ff00f3; } .st8 { fill: #a2ff00; } .st9 { fill: #00ff66; } .st10 { fill: #6d6db5; } .st11 { fill: #a700ff; } .st12 { fill: #ffb000; } .st13 { fill: #289332; } .st14 { fill: #c1005c; }
+        /* Estilo para los Stands (st15) */
+        .st15 { opacity: 0.8; fill: #d4d4d4; stroke: #333; stroke-width: 2; transition: all 0.2s ease; }
+        .st16 { fill: #00ffa3; } .st17 { fill: #511803; } .st18 { fill: #b3ffce; } .st19 { fill: #686868; }
+        .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st10, .st11, .st12, .st13, .st14, .st15, .st16, .st17, .st18, .st19 {
+            isolation: isolate;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Se elimina la limitación max-w-7xl para darle más espacio al mapa -->
+    <div class="mx-auto bg-white rounded-xl shadow-2xl p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Mapa Interactivo de Ubicaciones</h1>
+
+        <div class="flex flex-col gap-6">
+            
+            <!-- Panel de Información (añadido para que el JS funcione) -->
+            <div id="info-panel" class="p-4 bg-blue-50 border border-blue-200 rounded-lg transition-all shadow-lg">
+                <div id="initial-message">
+                    <p class="text-blue-700 font-semibold text-lg">
+                        👋 Haz clic en cualquier stand (gris) o foodtruck (color) en el mapa para ver su detalle.
+                    </p>
+                </div>
+                <!-- Los detalles del elemento se mostrarán aquí -->
+                <div id="element-details" class="hidden">
+                    <h2 id="element-title" class="text-xl font-extrabold text-blue-800 mb-1"></h2>
+                    <p id="element-type" class="text-gray-700 text-lg"></p>
+                    <p id="element-group" class="text-gray-700 text-lg"></p>
+                </div>
+            </div>
+
+            <!-- Contenedor del Mapa SVG: Ahora ocupa el ancho completo (w-full) -->
+            <div class="w-full flex justify-center items-start border-4 border-gray-100 p-4 rounded-xl bg-gray-50 overflow-auto">
+                
+                <!-- SVG de Stands y Foodtrucks: Se ajusta para que el mapa se vea más grande -->
+                <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 3916 2586" class="w-full h-auto max-w-[1200px]">
+                    <defs>
+                        <!-- Estilos de color (repetidos aquí para asegurar que el SVG incrustado los tome) -->
+                        <style>
+                            .st0 { fill: red; } .st1 { fill: #79b279; } .st2 { fill: #00c9ff; } .st3 { fill: blue; } .st4 { fill: #d36400; } .st5 { fill: #d0dd22; } .st6 { fill: #c78bcc; } .st7 { fill: #ff00f3; } .st8 { fill: #a2ff00; } .st9 { fill: #00ff66; } .st10 { fill: #6d6db5; } .st11 { fill: #a700ff; } .st12 { fill: #ffb000; } .st13 { fill: #289332; } .st14 { fill: #c1005c; }
+                            .st15 { opacity: 0.8; fill: #d4d4d4; stroke: #333; stroke-width: 2; transition: all 0.2s ease; }
+                            .st16 { fill: #00ffa3; } .st17 { fill: #511803; } .st18 { fill: #b3ffce; } .st19 { fill: #686868; }
+                            .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st10, .st11, .st12, .st13, .st14, .st15, .st16, .st17, .st18, .st19 { isolation: isolate; }
+                            /* TAMAÑO DE LA FUENTE DENTRO DEL SVG AUMENTADO */
+                            .number-label { font-size: 45px; font-family: Arial, sans-serif; fill: #000; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-weight: 700; }
+                        </style>
+                    </defs>
+                    
+                    <g id="STANDS_1_TO_28">
+                        <!-- Grupo de Stands 1-11 -->
+                        <rect class="st15 highlight" x="543.6" y="280.6" width="117" height="58" id="E1"/>
+                        <text x="602.1" y="309.6" class="number-label">1</text>
+                        <rect class="st15 highlight" x="661.6" y="280.6" width="58" height="58" id="E2"/>
+                        <text x="690.6" y="309.6" class="number-label">2</text>
+                        <rect class="st15 highlight" x="720.6" y="280.6" width="58" height="58" id="E3"/>
+                        <text x="749.6" y="309.6" class="number-label">3</text>
+                        <rect class="st15 highlight" x="779.6" y="280.6" width="58" height="58" id="E4"/>
+                        <text x="808.6" y="309.6" class="number-label">4</text>
+                        <rect class="st15 highlight" x="838.6" y="280.6" width="58" height="58" id="E5"/>
+                        <text x="867.6" y="309.6" class="number-label">5</text>
+                        <rect class="st15 highlight" x="897.6" y="280.6" width="58" height="58" id="E6"/>
+                        <text x="926.6" y="309.6" class="number-label">6</text>
+                        <rect class="st15 highlight" x="956.6" y="280.6" width="58" height="58" id="E7"/>
+                        <text x="985.6" y="309.6" class="number-label">7</text>
+                        <rect class="st15 highlight" x="1015.6" y="280.6" width="58" height="58" id="E8"/>
+                        <text x="1044.6" y="309.6" class="number-label">8</text>
+                        <rect class="st15 highlight" x="1074.6" y="280.6" width="58" height="58" id="E9"/>
+                        <text x="1103.6" y="309.6" class="number-label">9</text>
+                        <rect class="st15 highlight" x="1133.6" y="280.6" width="58" height="58" id="E10"/>
+                        <text x="1162.6" y="309.6" class="number-label">10</text>
+                        <rect class="st15 highlight" x="1192.6" y="280.6" width="117" height="58" id="E11"/>
+                        <text x="1251.1" y="309.6" class="number-label">11</text>
+                        
+                        <!-- Grupo de Stands 12-14 -->
+                        <rect class="st15 highlight" x="1310.6" y="339.6" width="58" height="58" id="E12"/>
+                        <text x="1339.6" y="368.6" class="number-label">12</text>
+                        <rect class="st15 highlight" x="1310.6" y="398.6" width="58" height="117" id="E13"/>
+                        <text x="1339.6" y="457.1" class="number-label">13</text>
+                        <rect class="st15 highlight" x="1310.6" y="516.6" width="58" height="117" id="E14"/>
+                        <text x="1339.6" y="575.1" class="number-label">14</text>
+
+                        <!-- Grupo de Stands 15-18 -->
+                        
+                        <rect class="st15 highlight" x="1310.6" y="845.6" width="58" height="235" id="E15"/>
+                        <text x="1339.6" y="963.1" class="number-label">15</text>
+                        <rect class="st15 highlight" x="1310.6" y="1081.6" width="58" height="58" id="E16"/>
+                        <text x="1339.6" y="1110.6" class="number-label">16</text>
+                        <rect class="st15 highlight" x="1310.6" y="1140.6" width="58" height="58" id="E17"/>
+                        <text x="1339.6" y="1169.6" class="number-label">17</text>
+                        <rect class="st15 highlight" x="1310.6" y="1199.6" width="58" height="117" id="E18"/>
+                        <text x="1339.6" y="1258.1" class="number-label">18</text>
+
+                        <!-- Grupo de Stands 19-21 -->
+                        <rect class="st15 highlight" x="1192.6" y="1317.6" width="117" height="58" id="E19"/>
+                        <text x="1251.1" y="1346.6" class="number-label">19</text>
+                        <rect class="st15 highlight" x="1133.6" y="1317.6" width="58" height="58" id="E20"/>
+                        <text x="1162.6" y="1346.6" class="number-label">20</text>
+                        <rect class="st15 highlight" x="1074.6" y="1317.6" width="58" height="58" id="E21"/>
+                        <text x="1103.6" y="1346.6" class="number-label">21</text>
+                        
+                        <!-- Grupo de Stands 22-24 -->
+                        <rect class="st15 highlight" x="661.6" y="1317.6" width="117" height="58" id="E22"/>
+                        <text x="720.1" y="1346.6" class="number-label">22</text>
+                        <rect class="st15 highlight" x="602.6" y="1317.6" width="58" height="58" id="E23"/>
+                        <text x="631.6" y="1346.6" class="number-label">23</text>
+                        <rect class="st15 highlight" x="485.9" y="1317.6" width="115.7" height="58" id="E24"/>
+                        <text x="543.75" y="1346.6" class="number-label">24</text>
+
+                        <!-- Grupo de Stands 25-28 (E27 MODIFICADO a horizontal) -->
+                        <g>
+                            <!-- Stand 25 (Rotado) -->
+                            <rect class="st15 highlight" x="968.1" y="827.9" width="58" height="58" id="E25" transform="translate(140.2 1854) rotate(-90)"/>
+                            <text x="997.1" y="856.9" class="number-label" transform="translate(140.2 1854) rotate(-90)">25</text>
+                            <!-- Stand 26 (Rotado) -->
+                            <rect class="st15 highlight" x="968.1" y="768.9" width="58" height="58" id="E26" transform="translate(199.2 1795) rotate(-90)"/>
+                            <text x="997.1" y="797.9" class="number-label" transform="translate(199.2 1795) rotate(-90)">26</text>
+                            
+                            <!-- Stand 28 (Horizontal, sin cambios) -->
+                            <rect class="st15 highlight" x="850.1" y="768.9" width="117" height="58" id="E28"/>
+                            <text x="908.6" y="797.9" class="number-label">28</text>
+                            
+                            <!-- Stand 27 (MODIFICADO a horizontal y reubicado) -->
+                            <rect class="st15 highlight" x="850.1" y="827.9" width="117" height="58" id="E27"/>
+                            <text x="908.6" y="856.9" class="number-label">27</text>
+                        </g>
+                    </g>
+                    
+                    <g id="FOODTRUCKS_29_TO_47">
+                        <!-- Grupo de Foodtrucks (356.2 y 374.4x) - Inicia en 29 -->
+                        <rect class="st3 highlight" x="356.2" y="1494.1" width="58" height="58" id="E29"/>
+                        <text x="385.2" y="1523.1" class="number-label">29</text>
+                        <rect class="st9 highlight" x="356.2" y="1683.9" width="58" height="58" id="E30a"/>
+                        <text x="385.2" y="1712.9" class="number-label">30</text>
+                        <rect class="st11 highlight" x="356.2" y="1935.8" width="58" height="58" id="E31a"/>
+                        <text x="385.2" y="1964.8" class="number-label">31</text>
+                        <rect class="st11 highlight" x="374.7" y="1873.7" width="39.5" height="55.1" id="E31b"/>
+                        <text x="394.45" y="1901.25" class="number-label">31</text>
+                        <rect class="st16 highlight" x="374.7" y="2125.6" width="39.5" height="60" id="E32"/>
+                        <text x="394.45" y="2155.6" class="number-label">32</text>
+                        <rect class="st9 highlight" x="374.4" y="1559.1" width="39.9" height="117.8" id="E30b"/>
+                        <text x="394.35" y="1618.0" class="number-label">30</text>
+                        <rect class="st7 highlight" x="374.4" y="1748.9" width="39.9" height="117.8" id="E33"/>
+                        <text x="394.35" y="1807.8" class="number-label">33</text>
+                        <rect class="st2 highlight" x="374.4" y="2000.8" width="39.9" height="117.8" id="E34"/>
+                        <text x="394.35" y="2059.7" class="number-label">34</text>
+                        
+                        <!-- Grupo de Foodtrucks (1412.5x) - Inicia en 35 -->
+                        <rect class="st19 highlight" x="1412.5" y="1993.1" width="58" height="58" id="E35a"/>
+                        <text x="1441.5" y="2022.1" class="number-label">35</text>
+                        <rect class="st1 highlight" x="1412.5" y="1686.3" width="58" height="58" id="E36a"/>
+                        <text x="1441.5" y="1715.3" class="number-label">36</text>
+                        <rect class="st6 highlight" x="1412.5" y="1494.1" width="58" height="58" id="E37"/>
+                        <text x="1441.5" y="1523.1" class="number-label">37</text>
+                        <rect class="st17 highlight" x="1412.5" y="1621.3" width="58" height="58" id="E38a"/>
+                        <text x="1441.5" y="1650.3" class="number-label">38</text>
+                        <rect class="st19 highlight" x="1412.5" y="2058.1" width="39.9" height="137.3" id="E35b"/>
+                        <text x="1432.45" y="2126.7" class="number-label">35</text>
+                        <rect class="st0 highlight" x="1412.5" y="1876.2" width="39.9" height="109.9" id="E39"/>
+                        <text x="1432.45" y="1931.15" class="number-label">39</text>
+                        <rect class="st1 highlight" x="1412.5" y="1751.3" width="39.9" height="117.9" id="E36b"/>
+                        <text x="1432.45" y="1810.25" class="number-label">36</text>
+                        <rect class="st17 highlight" x="1412.5" y="1559.1" width="39.9" height="55.2" id="E38b"/>
+                        <text x="1432.45" y="1586.7" class="number-label">38</text>
+
+                        <!-- Grupo de Foodtrucks (Eje 2218.3y) - Inicia en 40 -->
+                        <rect class="st8 highlight" x="544.4" y="2218.3" width="58" height="58" id="E40a"/>
+                        <text x="573.4" y="2247.3" class="number-label">40</text>
+                        <rect class="st14 highlight" x="1005.3" y="2218.3" width="58" height="58" id="E41a"/>
+                        <text x="1034.3" y="2247.3" class="number-label">41</text>
+                        <rect class="st12 highlight" x="1193.6" y="2218.3" width="78" height="58" id="E42"/>
+                        <text x="1232.6" y="2247.3" class="number-label">42</text>
+                        <rect class="st10 highlight" x="734.2" y="2218.3" width="78.5" height="58" id="E43"/>
+                        <text x="773.45" y="2247.3" class="number-label">43</text>
+                        <rect class="st18 highlight" x="819.7" y="2218.3" width="116.3" height="58" id="E44"/>
+                        <text x="877.85" y="2247.3" class="number-label">44</text>
+                        <rect class="st5 highlight" x="1070.3" y="2218.3" width="116.3" height="58" id="E45"/>
+                        <text x="1128.45" y="2247.3" class="number-label">45</text>
+                        <rect class="st14 highlight" x="943" y="2218.3" width="55.3" height="38.4" id="E41b"/>
+                        <text x="970.65" y="2237.5" class="number-label">41</text>
+                        <rect class="st8 highlight" x="419.6" y="2218.3" width="117.8" height="39.9" id="E40b"/>
+                        <text x="478.5" y="2238.25" class="number-label">40</text>
+                        <rect class="st13 highlight" x="609.4" y="2218.3" width="117.8" height="39.9" id="E46"/>
+                        <text x="668.3" y="2238.25" class="number-label">46</text>
+                        <rect class="st4 highlight" x="1278.6" y="2218.3" width="117.8" height="39.9" id="E47"/>
+                        <text x="1337.5" y="2238.25" class="number-label">47</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mapa para asociar IDs de grupo de Foodtrucks con una descripción y color
+        const foodtruckMap = {
+            'E29': { class: 'st3', name: 'Foodtruck', color: 'Azul', group: '29' },
+            'E30': { class: 'st9', name: 'Foodtruck', color: 'Verde Oscuro / Amarillo', group: '30' },
+            'E31': { class: 'st11', name: 'Foodtruck', color: 'Morado', group: '31' },
+            'E32': { class: 'st16', name: 'Foodtruck', color: 'Verde Menta', group: '32' },
+            'E33': { class: 'st7', name: 'Foodtruck', color: 'Fucsia/Magenta', group: '33' },
+            'E34': { class: 'st2', name: 'Foodtruck', color: 'Cian/Azul Claro', group: '34' },
+            'E35': { class: 'st19', name: 'Foodtruck', color: 'Gris Oscuro', group: '35' },
+            'E36': { class: 'st1', name: 'Foodtruck', color: 'Verde Oliva', group: '36' },
+            'E37': { class: 'st6', name: 'Foodtruck', color: 'Lila', group: '37' },
+            'E38': { class: 'st17', name: 'Foodtruck', color: 'Marrón Oscuro', group: '38' },
+            'E39': { class: 'st0', name: 'Foodtruck', color: 'Rojo', group: '39' },
+            'E40': { class: 'st8', name: 'Foodtruck', color: 'Verde Brillante', group: '40' },
+            'E41': { class: 'st14', name: 'Foodtruck', color: 'Ciruela Oscuro', group: '41' },
+            'E42': { class: 'st12', name: 'Foodtruck', color: 'Naranja Cítrico', group: '42' },
+            'E43': { class: 'st10', name: 'Foodtruck', color: 'Azul Pizarra', group: '43' },
+            'E44': { class: 'st18', name: 'Foodtruck', color: 'Verde Pálido', group: '44' },
+            'E45': { class: 'st5', name: 'Foodtruck', color: 'Amarillo Limón', group: '45' },
+            'E46': { class: 'st13', name: 'Foodtruck', color: 'Verde Bosque', group: '46' },
+            'E47': { class: 'st4', name: 'Foodtruck', color: 'Naranja Oscuro', group: '47' },
+        };
+
+        const infoPanel = document.getElementById('info-panel');
+        const elementDetails = document.getElementById('element-details');
+        const elementTitle = document.getElementById('element-title');
+        const elementType = document.getElementById('element-type');
+        const elementGroup = document.getElementById('element-group');
+        const initialMessage = document.getElementById('initial-message');
+        let lastHighlightedElement = null;
+
+        /**
+         * Maneja el clic en un elemento (rect) del SVG
+         * @param {Event} event 
+         */
+        function handleElementClick(event) {
+            const element = event.target;
+            const elementId = element.id;
+
+            if (!elementId) return;
+
+            const isStand = element.classList.contains('st15');
+            // Usamos una expresión regular para manejar IDs como E1, E30a, E30b, extrayendo el número principal (ej: 30)
+            const match = elementId.match(/E(\d+)/);
+            if (!match) return;
+            
+            const elementNumber = parseInt(match[1]);
+            const groupId = `E${elementNumber}`;
+
+            let title, type, groupInfo, groupColor;
+
+            if (isStand) {
+                // Es un Stand (st15)
+                title = `Stand ${elementNumber}`;
+                type = 'Stand Individual';
+                groupInfo = 'Gris (Agrupado por diseño)';
+                groupColor = 'Gris';
+            } else {
+                // Es un Foodtruck (colores distintos a st15)
+                const prefixId = groupId.match(/E\d+/)[0]; // E29, E30, etc.
+                const data = foodtruckMap[prefixId];
+                if (!data) return; // Fallback por si el ID no está en el mapa
+
+                title = `${data.name} #${data.group}`;
+                type = `${data.name} (ID: ${elementId})`;
+                groupInfo = `Grupo ${data.group}: ${data.color}`;
+                groupColor = data.color;
+            }
+
+            // 1. Actualiza el panel de información
+            elementTitle.textContent = title;
+            elementType.innerHTML = `Tipo: <span class="font-bold">${type}</span>`;
+            elementGroup.innerHTML = `Identificación: <span class="font-bold">${groupInfo}</span>`;
+            
+            // Muestra los detalles y oculta el mensaje inicial
+            initialMessage.classList.add('hidden');
+            elementDetails.classList.remove('hidden');
+
+
+            // 2. Resaltado visual
+            if (lastHighlightedElement) {
+                // Restaura el stroke del elemento previamente clickeado
+                lastHighlightedElement.style.stroke = lastHighlightedElement.classList.contains('st15') ? '#333' : 'none'; // Quita el stroke
+                lastHighlightedElement.style.strokeWidth = lastHighlightedElement.classList.contains('st15') ? '2px' : '0px'; 
+            }
+
+            // Resalta el nuevo elemento
+            element.style.stroke = '#ff0000'; 
+            element.style.strokeWidth = '5px';
+            lastHighlightedElement = element;
+        }
+
+        /**
+         * Inicializa los escuchadores de eventos
+         */
+        function initMap() {
+            // Obtener todos los elementos rect que son clickeables
+            const elements = document.querySelectorAll('#Capa_1 rect.highlight');
+            
+            elements.forEach(element => {
+                element.addEventListener('click', handleElementClick);
+
+                // Manejo de hover para resaltado visual (adicional al CSS)
+                element.addEventListener('mouseenter', () => {
+                    // Solo si no es el elemento clickeado actualmente
+                    if (element !== lastHighlightedElement) {
+                        element.style.stroke = '#ff6600';
+                        element.style.strokeWidth = '3px';
+                    }
+                });
+                element.addEventListener('mouseleave', () => {
+                    if (element !== lastHighlightedElement) {
+                        // Restaura el estilo base
+                        element.style.stroke = element.classList.contains('st15') ? '#333' : 'none';
+                        element.style.strokeWidth = element.classList.contains('st15') ? '2px' : '0px';
+                    }
+                });
+            });
+        }
+
+        // Ejecutar la inicialización una vez que la página haya cargado
+        window.onload = initMap;
+    </script>
+</body>
+</html>
