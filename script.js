@@ -150,6 +150,11 @@ const serviceAreasData = [
 function applyTransform() {
   container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
   updateTextVisibility();
+
+  // Escala el tooltip de forma inversa al zoom para que mantenga un tamaño legible
+  if (tooltip) {
+    tooltip.style.transform = `scale(${1 / zoomLevel})`;
+  }
 }
 
 function calculateMinZoom() {
@@ -223,40 +228,44 @@ function updateTextVisibility() {
   });
 }
 
-function showTooltip(area, event, pinned = false) {
-  // 1. Oculta cualquier tooltip existente y limpia cualquier timeout anterior
+function showTooltip(area, areaElement, pinned = false) {
   hideTooltip(); 
 
-  // No hacer nada si el área no tiene nombre
   if (!area.name) return; 
 
-  // Crea el elemento del tooltip
   tooltip = document.createElement('div');
   tooltip.textContent = area.name;
-  tooltip.className = 'tooltip-text show'; 
-  
+  tooltip.className = 'tooltip-text'; 
+
   if (pinned) {
     tooltip.classList.add('pinned');
   }
-  
-  // Posiciona el tooltip
-  if (event.clientX && event.clientY) {
-    tooltip.style.left = `${event.clientX}px`;
-    tooltip.style.top = `${event.clientY - 30}px`;
-  } else if (event.touches && event.touches[0]) {
-    tooltip.style.left = `${event.touches[0].clientX}px`;
-    tooltip.style.top = `${event.touches[0].clientY - 30}px`;
-  }
 
-  // Agrega el tooltip al contenedor principal para que sea visible
-  interactiveContainer.appendChild(tooltip);
-  
-  // 2. Establece un nuevo timeout SÓLO si el tooltip está fijado
-  if (pinned) {
-    tooltipTimeout = setTimeout(() => {
-      hideTooltip();
-    }, 2000); // 2 segundos
-  }
+  container.appendChild(tooltip);
+
+  // Espera un tick para que se calcule el ancho del tooltip
+  requestAnimationFrame(() => {
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+
+    // Centrar horizontalmente y colocar sobre el borde superior
+    const tooltipX = area.x + area.width / 2 - tooltipWidth / 2;
+    const tooltipY = area.y - tooltipHeight - 8; // 8px de separación
+
+    tooltip.style.left = `${tooltipX}px`;
+    tooltip.style.top = `${tooltipY}px`;
+
+    // Ajusta tamaño proporcional al zoom
+    tooltip.style.transform = `scale(${1 / zoomLevel})`;
+
+    tooltip.classList.add('show');
+
+    if (pinned) {
+      tooltipTimeout = setTimeout(() => {
+        hideTooltip();
+      }, 3000); // 3 segundos
+    }
+  });
 }
 
 
@@ -302,33 +311,29 @@ function createInteractiveArea(area) {
   container.appendChild(areaElement);
 
   // Lógica de eventos para stands y servicios
-   if (isService) {
-    // Para servicios: mostrar tooltip al pasar el mouse (PC)
-    areaElement.addEventListener('mouseenter', (e) => {
-      // Pasa `areaElement` a la función
-      showTooltip(area, e, areaElement); 
+  if (isService) {
+    // Evento para mouseenter (PC)
+    areaElement.addEventListener('mouseenter', () => {
+      showTooltip(area, areaElement);
     });
-    // ... el resto de la lógica de mouseleave es la misma ...
-    
-    // Click en PC para fijar el tooltip 3 segundos
+    // Evento para mouseleave (PC)
+    areaElement.addEventListener('mouseleave', () => {
+      hideTooltip();
+    });
+    // Evento para clic (PC)
     areaElement.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Pasa `areaElement` a la función
-      showTooltip(area, e, areaElement, true);
+      showTooltip(area, areaElement, true);
     });
-
-    // Se agrega el evento 'touchstart' para mostrar el tooltip en móviles (fijado por 3 segundos)
+    // Evento para touchstart (Móviles)
     areaElement.addEventListener('touchstart', (e) => {
       e.stopPropagation();
-      hideTooltip();
-      // Pasa `areaElement` a la función
-      showTooltip(area, e, areaElement, true);
+      showTooltip(area, areaElement, true);
     }, {
       passive: false
     });
-
   } else {
-    // Para stands: abrir modal
+    // Para stands, abrir modal
     areaElement.addEventListener('click', (e) => {
       e.stopPropagation();
       showModal(area);
@@ -336,15 +341,15 @@ function createInteractiveArea(area) {
   }
 }
 
+
 function showModal(area) {
-  console.log(`INFO: Mostrando modal para el stand: ${area.name}`);
+  // Actualiza contenido
   modalTitle.textContent = area.name;
   modalFlag.src = area.flag;
   modalFlag.alt = `Bandera de ${area.name}`;
   modalInfo.textContent = area.info || 'Información no disponible';
-  
+
   modalMenu.innerHTML = '';
-  
   if (area.menu && area.menu.length > 0) {
     area.menu.forEach(item => {
       const li = document.createElement('li');
@@ -355,14 +360,18 @@ function showModal(area) {
       modalMenu.appendChild(li);
     });
   }
-  
-  modal.style.display = 'flex';
+
+  // Muestra el modal
+  modal.classList.add('show');
+  modal.style.display = 'flex'; // asegura que esté visible
 }
 
-function hideModal() { 
-  modal.style.display = 'none';
-  console.log("INFO: Modal ocultado.");
+function hideModal() {
+  modal.classList.remove('show');
+  // No necesitamos listener de transitionend
 }
+
+
 
 // =======================================================
 // GESTIÓN DE EVENTOS
@@ -383,6 +392,9 @@ zoomInBtn.addEventListener('click', () => {
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
+  hideTooltip(); // Oculta el tooltip al hacer zoom
+
+  
 });
 
 zoomOutBtn.addEventListener('click', () => {
@@ -399,6 +411,7 @@ zoomOutBtn.addEventListener('click', () => {
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
+  hideTooltip(); // Oculta el tooltip al hacer zoom
 });
 
 resetViewBtn.addEventListener('click', () => {
@@ -411,6 +424,7 @@ resetViewBtn.addEventListener('click', () => {
   const oldPanX = panX;
   const oldPanY = panY;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
+  hideTooltip(); // Oculta el tooltip al restablecer la vista
 });
 
 
@@ -418,6 +432,7 @@ closeBtn.onclick = hideModal;
 
 window.onclick = e => { 
   if (e.target === modal) hideModal(); 
+  hideTooltip(); // Oculta el tooltip al hacer clic en cualquier parte de la ventana
 };
 
 document.addEventListener('keydown', e => { 
@@ -430,6 +445,7 @@ container.addEventListener('dblclick', (e) => {
   const oldPanX = panX;
   const oldPanY = panY;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
+  hideTooltip(); // Oculta el tooltip al hacer doble clic
 });
 
 // Event listeners para mouse (PC)
@@ -461,7 +477,6 @@ window.addEventListener('mousemove', (e) => {
   panX = e.clientX - startX;
   panY = e.clientY - startY;
   applyTransform();
-  // Call hideTooltip() to dismiss the tooltip when panning
   hideTooltip(); 
 });
 
@@ -480,6 +495,7 @@ container.addEventListener('wheel', (e) => {
   const targetPanX = cursorX - mapX * targetZoom;
   const targetPanY = cursorY - mapY * targetZoom;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
+  hideTooltip();
 });
 
 // ----------------------------------------------------
@@ -561,6 +577,7 @@ interactiveContainer.addEventListener('touchmove', (e) => {
     
     applyTransform();
     e.preventDefault();
+    hideTooltip();
   }
 }, { passive: false });
 
@@ -594,6 +611,7 @@ interactiveContainer.addEventListener('touchend', (e) => {
       const oldPanY = panY;
       animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
       lastTapTime = 0;
+      hideTooltip();
     } else {
       const element = document.elementFromPoint(touch.clientX, touch.clientY);
       if (element) {
@@ -605,7 +623,7 @@ interactiveContainer.addEventListener('touchend', (e) => {
               const isService = serviceAreasData.some(service => service.id === standId);
               if (isService) {
                   // Si es un servicio, muestra el tooltip en el toque
-                  showTooltip(standData, e.changedTouches[0]);
+                  showTooltip(standData, standElement, true);
               } else {
                   // Si es un stand, muestra el modal
                   showModal(standData);
