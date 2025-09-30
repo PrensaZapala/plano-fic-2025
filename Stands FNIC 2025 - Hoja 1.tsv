@@ -1,0 +1,48 @@
+id	name	flag	info
+stand-1	colectividad italiana	italia	pizza de distintas variedades. focaccia (día sábado). cannoli sicilianos dulces y salados. fernet, negroni, aperol, limonada y bebidas sin gas.
+stand-2	brennus	cervecería	variedad de cervezas artesanales
+stand-3	hijxs de la fruta	argentina	jugos, licuados y tragos sin alcohol con fruta natural y orgánica de productores de la zona
+stand-4	mc.chef	país vasco	charcutería artesanal, panes, sándwich fríos y calientes, vermouth, vinos. torta vasca
+stand-5	ginger	cuba	tragos tropicales. cuba libre, mojito, el presidente, old cuban, daiquiri original cubano. carta de tragos clásica
+stand-6	colectividad	afro	chocolates y bombonería con especias y sabores afro. brochetas de pollo con salsa de maní. jollof rice con pollo dorado. porotos negros estilo afro cubano
+stand-7	colectividad	ucrania	vareniki de papa y ricota (pastas) bebida: uzvar (frutos secos y bayas). dulce medovik (pastel de miel), vergun shuliki
+stand-8	colectividad	venezuela	variedad de arepas venezolanas, tequeños, guasacaca (salsa). bebidas originarias venezolanas
+stand-9	colectividad	dominicana	empanada de mandioca con carne o pollo, empanada de vegetales, majarete (postre), picante especial, jugo varios (guarapo, pera, piña, morir soñando), turrón varios maní, sésamo, coco, batata. plátanos fritos, pan de maíz, ponche, crema palito de coco, mermelada de berenjenas, mermelada de piña.
+stand-10	vittorio	francia	estación salada: le comptoir salé: papas fritas con salsas (aioli, provenzal, mostaza de dijon, borgoña, roquefort, occitania). mini baguette con charcutería francesa (jamón de bayonne, saucisson sec). raclette. estación de dulces: la pâtisserie: canelé (burdeos). croissant (parís) . financier (parís). macarons (lorena/parís). éclair (parís). crème brûlée (francia central). flan parisien.
+stand-11	colectividad	alemana	panchos. salchichas con chucrut. currywurst. papas fritas con salchicha y panceta. pan cuca. wickel nudel. frikadelen al plato. propuesta dulce: strudel, stolen, tortas de nuez. selva negra. budín de cerveza . torta rusa. torta kuchen frutos rojos. tarta manzana . galletas. lebkuchen. pfeffernüsse. kraut pirok (empanadas).bretzel. kreppel(calzones rotos).
+stand-12	solo sin tacc	estados unidos	preparaciones sin tacc: pizzas, corn dog con fritas, cookies, postres individuales.
+stand-13	colectividad	sirio libanés	shawarma carne, quizás de pollo, empanadas árabes de carne, dulce árabe. bebidas sin alcohol.
+stand-14	click	barra de tragos	carta de bebidas
+stand-15	museo, family search, migraciones		museo
+stand-16	el michacheo (stand)	suiza	chocolates. fondue de chocolate. rosti. waffles callejeros. batidos suizos jugos
+stand-17	la cantina	venezuela	pepito venezolano (panco con carne mechada), empanada venezolana. postre: quesadilla (flan) bebidas sin alcohol.
+stand-18	tienda de cerveza	bebidas	carta de tragos y bebidas
+stand-19	colectividad	chilena	empanadas fritas y horneadas, bistec a lo pobre, chorrillana, salchipapas, chaparritas, pichona, pastel de choclo, chacareros, barrosluco, cazuela de ave, papas rellenas (acompañadas de salsas o ensalada), anticuchos, pollo arvejado, pankutras, brochetes, sopaipilla con pebre, pan con chicharrón.  platos dulces: brazo de reina, berlines, calzones rotos, alfajores de hojarascas, chilenitos, pajaritos con betún, picarones, kutchen, leche asada, leche nevada, sémola con salsa de vino tinto, chocolates con merkén, ñaco chancón en piedra.  tragos y bebidas: terremoto, piscola, cola de mono, mote con cola de mono, navegado, ponche de vino con frutillas, gaseosa, agua, mote con huesillo.
+stand-20	vinoteca ajc		variedades de vinos servidos en copa
+stand-21	colectividad	boliviana	cordero al horno de barro, panpacu, empanadas, sopa de maní, pan churrasca, jugo natural de durazno disecado.
+stand-22	colectividad	españa	paella española .tortillas. fabada asturiana. gazpacho. tapeo. ternera cordero y lechón asado. repostería española, arroz con leche, flan. sidra. sangría. limonada. espirituosos, bebidas sin alcohol.
+stand-23	colectividad	china	arrolladito de primavera (chūn juǎn), ramen, dumpling y bao. bebidas sin alcohol.
+stand-24	instalaciones comerciales		sponsor
+stand-25	22/40	cervecería	variedad de cervezas artesanales
+stand-26	ways	argentina	arrollado. chocotorta. alfajores de maicena. alfajores de coco. alfajores artesanales. conitos de dulce de leche. pastafrola. budín. jugos. café
+stand-27	casa madero	barra de tragos	carta de bebidas con alcohol y sin alcohol
+stand-28	wine truck malma	bodega	vinos malma
+stand-29	españa	españa	
+stand-30	all blacks	argentina	carne al disco, cordero a la estaca, carne a la parrilla, matambre de cerdo. milanesas, sándwich lomo, hamburguesa, lomo con papas con salsa criolla y/o toppings, revuelto gramajo.
+stand-31	bule bar	brasil	feijoada. barbacoa a la parrilla y ahumada (corte de carne picaña) y longaniza (chorizo). frango. bebidas caipiriña, caipiroska, mojito, cerveza.
+stand-32	la marchanta	méxico	tacos, burritos, quesadillas, elotes, papas mexicanas, nachos, tragos, ensaladas de fruta y bebidas sin alcohol
+stand-33	papas solcito	bélgica	metraillette (ametralladora). papas fritas. hot dog super hot dog (panchos) y cerveza.
+stand-34	sendero	paraguay	tacos con harina de mandioca rellenos con cerdo desmenuzado y variedades de salsas: salsa de boñato, salsa criolla con verdeo. empanadas y chipa. papas fritas.
+stand-35	ki burgers	estados unidos	hot dogs burgers (4 variedades) corn dogs ribs de cerdo philly cheese sándwich. pork sándwich meatball sándwich. chicken fingers. milkshake, red velvet, brownie, cheescake. cerveza tirada y tragos típicos
+stand-36	el bar rodante	argentina	carnes vacuna, cordero, chivo, desmenuzado. variedad de salsas típicas argentinas: cilantro y tomate , albahaca y tomate, chimi. carta de bebidas.
+stand-37	shawarma	turquía	shawarma
+stand-38	nuovo forno	italia	pizzas
+stand-39	don amancio	cerveceria	cerveza, tragos, jugos y licuados
+stand-40	raices	países bajos	sándwich con ingredientes tradicionales de países bajos. croquetas de papas, snacks de salchichas y papas, infusiones (artesanales típicas de países bajos). confituras holandesas, jugos naturales, cerveza artesanal y gin
+stand-41	ruta de sabores	sabores neuquinos	chorizo de ciervo en pan de manzana y criolla confluencia. trucha con gremolata de frutos secos sobre ratauille, sándwich de ojo de bife con pebre araucano y queso las vertientes fundido tostón con carpaccio de pera, azul, nuez y girgola asadas.
+stand-42	un poco mucho	españa	papas bravas, sándwich de jamón crudo. sangría.
+stand-43	la estación	uruguay	sandwich de lomito (chivito). sandwich de pollo. milanesas. papas fritas ondeadas. aros de cebollas. chorípan. salsa criolla y otras. tostados. pebetes. tortas fritas comunes y rellenas. licuados. bebidas sin alcohol.
+stand-44	el michacheo (carro)	suiza	bebidas suizas. jugos y batidos. rosti. waffles callejeros de cuatro quesos o crema y dulce de frutos rojos
+stand-45	a la chingada	méxico	tacos de carne y pollo. tacos de chorizo. adicionales de ají, guacamole, porotos negros. burritos de carne y pollo; con adicional de guacamole, salsa de ají, porotos negros, queso cremoso, salsa criolla. papas fritas mexicanas (papas fritas con salsa de aji y guacamole). nachos con guacamole. super completo mexicano (super pancho con colores mexicanos, salsa guacamole, salsa picante y alioli) tripancho completo (tripancho con salsa guacamole, alioli y salsa de ají). torta de jamón del chavo (jamón cocido, queso en barra, guacamole, lechuga, tomate y aderezos a gusto en pan baguette o similar). bebidas sin alcohol. bebidas alcohólicas: kriptonita mexicana (tequila, licor de menta, piña colada, limón). tequilazo (tequila, blue curazao, leche condensada, sprite), charro negro(tequila, voca y limón) tequila sunrise (tequila, jugo de naranja y granadina) méxico en la piel (tequila, sprite, granadina y limón).
+stand-46	carripollo	inglaterra	fish and chip. sausage rolls, britsh style chips. tartar sauce. propuesta dulce: scones, oat biscuits (quaker-stye), apple crunch, crispy sweet crust, classic lemon tartlets
+stand-47	bolivia	bolivia	

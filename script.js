@@ -6,6 +6,54 @@ function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || ('ontouchstart' in window);
 }
 
+// -------------------------------------------------------
+// FUNCIONES DE MAPEO DE BANDERAS
+// -------------------------------------------------------
+
+/**
+ * Mapeo de CLAVES PERSONALIZADAS (no-ISO) a sus nombres de archivo locales.
+ */
+const CUSTOM_FLAG_MAP = {
+    'custom_basque': 'icon_basque.svg',         // País Vasco
+    'custom_africa': 'icon_africa.svg',         // Colectividad Afro
+    'custom_syrialeb': 'icon_syrialeb.svg',     // Sirio Libanés
+    'custom_beer': 'icon_beer.svg',             // Cervecería
+    'custom_cocktail': 'icon_cocktail.svg',     // Barra de Tragos
+    'custom_drink': 'icon_drink.svg',           // Bebidas
+    'custom_wine': 'icon_wine.svg',             // Bodega
+    'custom_neuquen': 'icon_neuquen.svg',       // Sabores Neuquinos
+    'custom_museum': 'icon_museum.svg',         // Museo
+    'custom_commercial': 'icon_commercial.svg', // Instalaciones Comerciales
+};
+
+/**
+ * Convierte el código de país/categoría (del TSV columna 'code')
+ * en una URL de bandera. Usa flagcdn.com para códigos ISO.
+ * * @param {string} flagCode - El valor de la columna 'code' del TSV (ej. 'it' o 'custom_beer').
+ * @returns {string} La URL completa de la imagen de la bandera o una cadena vacía.
+ */
+function getFlagUrl(flagCode) {
+    if (!flagCode) return '';
+
+    const cleanCode = flagCode.toLowerCase().trim();
+
+    // 1. Manejo de claves ISO (o códigos regionales como 'gb-eng')
+    if (!cleanCode.startsWith('custom_')) {
+        // Asumimos que es un código ISO válido de 2 letras o 5 letras (ej. gb-eng).
+        // Formato: https://flagcdn.com/w320/{code}.png
+        return `https://flagcdn.com/w320/${cleanCode}.png`;
+    } 
+    
+    // 2. Manejo de claves PERSONALIZADAS (íconos locales)
+    const fileName = CUSTOM_FLAG_MAP[cleanCode];
+    if (fileName) {
+        // La URL debe apuntar a tu carpeta local de íconos.
+        return `img/flags/${fileName}`;
+    }
+
+    return '';
+}
+
 // =======================================================
 // VARIABLES Y ELEMENTOS DEL DOM
 // =======================================================
@@ -20,19 +68,15 @@ const modalTitle = document.getElementById('modalTitle');
 const modalMenu = document.getElementById('modalMenu');
 const modalInfo = document.getElementById('modalInfo');
 
-// Nuevas variables para las instrucciones
 const instructionsMobile = document.getElementById('instructions-mobile');
 const instructionsPC = document.getElementById('instructions-pc');
 
-// Nuevas variables para los botones de control
 const zoomInBtn = document.getElementById('zoom-in');
 const zoomOutBtn = document.getElementById('zoom-out');
 const resetViewBtn = document.getElementById('reset-view');
 
-// Nueva variable para el tooltip
 let tooltip = null;
 let tooltipTimeout = null;
-
 
 // =======================================================
 // GESTIÓN DE TRANSFORMACIONES Y ESTADO
@@ -49,7 +93,6 @@ let isZoomAnimating = false;
 let animationFrame = null;
 let minZoomLevel = 0.2;
 
-// Variables para manejar touch eventos
 let touchStartTime = 0;
 let touchStartX = 0;
 let touchStartY = 0;
@@ -57,115 +100,77 @@ let hasMoved = false;
 let isMultiTouch = false;
 let lastTapTime = 0;
 
-// Variables para la vista inicial
 let initialZoomLevel = 1;
 let initialPanX = 0;
 let initialPanY = 0;
 
+// =======================================================
+// DATOS DE LOS STANDS (Solo posiciones y dimensiones)
+// =======================================================
+const standsBaseData = [
+  { id: "stand-1", x: 543.6, y: 280.6, width: 117, height: 58 },
+  { id: "stand-2", x: 661.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-3", x: 720.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-4", x: 779.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-5", x: 838.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-6", x: 897.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-7", x: 956.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-8", x: 1015.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-9", x: 1074.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-10", x: 1133.6, y: 280.6, width: 58, height: 58 },
+  { id: "stand-11", x: 1192.6, y: 280.6, width: 117, height: 58 },
+  { id: "stand-12", x: 1310.6, y: 339.6, width: 58, height: 58 },
+  { id: "stand-13", x: 1310.6, y: 398.6, width: 58, height: 117 },
+  { id: "stand-14", x: 1310.6, y: 516.6, width: 58, height: 117 },
+  { id: "stand-15", x: 1310.6, y: 846.8, width: 58, height: 233.8 },
+  { id: "stand-16", x: 1310.6, y: 1081.6, width: 58, height: 58 },
+  { id: "stand-17", x: 1310.6, y: 1140.6, width: 58, height: 58 },
+  { id: "stand-18", x: 1310.6, y: 1199.6, width: 58, height: 117 },
+  { id: "stand-19", x: 1192.6, y: 1317.6, width: 117, height: 58 },
+  { id: "stand-20", x: 1133.6, y: 1317.6, width: 58, height: 58 },
+  { id: "stand-21", x: 1074.6, y: 1317.6, width: 58, height: 58 },
+  { id: "stand-22", x: 661.6, y: 1317.6, width: 117, height: 58 },
+  { id: "stand-23", x: 602.6, y: 1317.6, width: 58, height: 58 },
+  { id: "stand-24", x: 485.9, y: 1317.6, width: 115.7, height: 58 },
+  { id: "stand-25", x: 968.1, y: 827.9, width: 58, height: 58 },
+  { id: "stand-26", x: 968.1, y: 768.9, width: 58, height: 58 },
+  { id: "stand-27", x: 850.1, y: 827.9, width: 117, height: 58 },
+  { id: "stand-28", x: 850.1, y: 768.9, width: 117, height: 58 },
+  { id: "stand-29", x: 356.2, y: 1494.1, width: 58, height: 58 },
+  { id: "stand-30a", x: 356.2, y: 1683.9, width: 58, height: 58 },
+  { id: "stand-30b", x: 374.4, y: 1559.1, width: 39.9, height: 117.8 },
+  { id: "stand-31", x: 374.4, y: 1748.9, width: 39.9, height: 117.8 },
+  { id: "stand-32a", x: 356.2, y: 1935.8, width: 58, height: 58 },
+  { id: "stand-32b", x: 374.7, y: 1873.7, width: 39.5, height: 55.1 },
+  { id: "stand-33", x: 374.4, y: 2000.8, width: 39.9, height: 117.8 },
+  { id: "stand-34", x: 374.7, y: 2125.6, width: 39.5, height: 60 },
+  { id: "stand-35a", x: 549.7, y: 2218.3, width: 58, height: 58 },
+  { id: "stand-35b", x: 424.9, y: 2218.3, width: 117.8, height: 39.9 },
+  { id: "stand-36a", x: 677, y: 2218.3, width: 58, height: 58 },
+  { id: "stand-36b", x: 614.7, y: 2218.3, width: 55.3, height: 38.4 },
+  { id: "stand-37", x: 742, y: 2218.3, width: 116.3, height: 58 },
+  { id: "stand-38", x: 865.3, y: 2218.3, width: 78.5, height: 58 },
+  { id: "stand-39", x: 950.8, y: 2218.3, width: 117.8, height: 39.9 },
+  { id: "stand-40", x: 1075.6, y: 2218.3, width: 116.3, height: 58 },
+  { id: "stand-41", x: 1198.9, y: 2218.3, width: 78, height: 58 },
+  { id: "stand-42", x: 1283.9, y: 2218.3, width: 117.8, height: 39.9 },
+  { id: "stand-43a", x: 1412.5, y: 1993.1, width: 58, height: 58 },
+  { id: "stand-43b", x: 1412.5, y: 2058.1, width: 39.9, height: 137.3 },
+  { id: "stand-44", x: 1412.5, y: 1876.2, width: 39.9, height: 109.9 },
+  { id: "stand-45a", x: 1412.5, y: 1686.3, width: 58, height: 58 },
+  { id: "stand-45b", x: 1412.5, y: 1751.3, width: 39.9, height: 117.9 },
+  { id: "stand-46a", x: 1412.5, y: 1621.3, width: 58, height: 58 },
+  { id: "stand-46b", x: 1412.5, y: 1559.1, width: 39.9, height: 55.2 },
+  { id: "stand-47", x: 1412.5, y: 1494.1, width: 58, height: 58 }
+];
+
+// Variable global para datos combinados
+let interactiveAreasData = [];
 
 // =======================================================
-// DATOS DE LOS STANDS
+// DATOS DE LOS SERVICIOS (Solo coordenadas y nombres por defecto)
 // =======================================================
-const interactiveAreasData = [
-      // --- Stands (E1 - E28) ---
-{ id: "stand-1", x: 543.6, y: 280.6, width: 117, height: 58, name: "Stand 1", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 1." },
-    { id: "stand-2", x: 661.6, y: 280.6, width: 58, height: 58, name: "Stand 2", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 2." },
-    { id: "stand-3", x: 720.6, y: 280.6, width: 58, height: 58, name: "Stand 3", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 3." },
-    { id: "stand-4", x: 779.6, y: 280.6, width: 58, height: 58, name: "Stand 4", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 4." },
-    { id: "stand-5", x: 838.6, y: 280.6, width: 58, height: 58, name: "Stand 5", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 5." },
-    { id: "stand-6", x: 897.6, y: 280.6, width: 58, height: 58, name: "Stand 6", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 6." },
-    { id: "stand-7", x: 956.6, y: 280.6, width: 58, height: 58, name: "Stand 7", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 7." },
-    { id: "stand-8", x: 1015.6, y: 280.6, width: 58, height: 58, name: "Stand 8", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 8." },
-    { id: "stand-9", x: 1074.6, y: 280.6, width: 58, height: 58, name: "Stand 9", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 9." },
-    { id: "stand-10", x: 1133.6, y: 280.6, width: 58, height: 58, name: "Stand 10", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 10." },
-    { id: "stand-11", x: 1192.6, y: 280.6, width: 117, height: 58, name: "Stand 11", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 11." },
-    { id: "stand-12", x: 1310.6, y: 339.6, width: 58, height: 58, name: "Stand 12", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 12." },
-    { id: "stand-13", x: 1310.6, y: 398.6, width: 58, height: 117, name: "Stand 13", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 13." },
-    { id: "stand-14", x: 1310.6, y: 516.6, width: 58, height: 117, name: "Stand 14", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 14." },
-    { id: "stand-15", x: 1310.6, y: 845.6, width: 58, height: 235, name: "Stand 15", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 15." },
-    { id: "stand-16", x: 1310.6, y: 1081.6, width: 58, height: 58, name: "Stand 16", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 16." },
-    { id: "stand-17", x: 1310.6, y: 1140.6, width: 58, height: 58, name: "Stand 17", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 17." },
-    { id: "stand-18", x: 1310.6, y: 1199.6, width: 58, height: 117, name: "Stand 18", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 18." },
-    { id: "stand-19", x: 1192.6, y: 1317.6, width: 117, height: 58, name: "Stand 19", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 19." },
-    { id: "stand-20", x: 1133.6, y: 1317.6, width: 58, height: 58, name: "Stand 20", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 20." },
-    { id: "stand-21", x: 1074.6, y: 1317.6, width: 58, height: 58, name: "Stand 21", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 21." },
-    { id: "stand-22", x: 661.6, y: 1317.6, width: 117, height: 58, name: "Stand 22", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 22." },
-    { id: "stand-23", x: 602.6, y: 1317.6, width: 58, height: 58, name: "Stand 23", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 23." },
-    { id: "stand-24", x: 485.9, y: 1317.6, width: 115.7, height: 58, name: "Stand 24", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 24." },
-    { id: "stand-25", x: 968.1, y: 827.9, width: 58, height: 58, name: "Stand 25", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 25. (Parte rotada)" },
-    { id: "stand-26", x: 968.1, y: 768.9, width: 58, height: 58, name: "Stand 26", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 26. (Parte rotada)" },
-    { id: "stand-27", x: 850.1, y: 827.9, width: 117, height: 58, name: "Stand 27", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 27." },
-    { id: "stand-28", x: 850.1, y: 768.9, width: 117, height: 58, name: "Stand 28", flag: "https://flagcdn.com/w80/zz.png", info: "Información del Stand 28." },
-
-    // --- Foodtrucks (E29 - E47, múltiples colores) ---
-    // FT 29 (st3: Azul)
-    { id: "stand-29", x: 356.2, y: 1494.1, width: 58, height: 58, name: "Foodtruck 29 (Azul)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 29 - Color Azul." },
-
-    // FT 30 (st9: Verde Oscuro / Amarillo)
-    { id: "stand-30a", x: 356.2, y: 1683.9, width: 58, height: 58, name: "Foodtruck 30 (Verde/Amarillo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 30 - Parte A." },
-    { id: "stand-30b", x: 374.4, y: 1559.1, width: 39.9, height: 117.8, name: "Foodtruck 30 (Verde/Amarillo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 30 - Parte B." },
-
-    // FT 31 (st11: Morado)
-    { id: "stand-31a", x: 356.2, y: 1935.8, width: 58, height: 58, name: "Foodtruck 31 (Morado)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 31 - Parte A." },
-    { id: "stand-31b", x: 374.7, y: 1873.7, width: 39.5, height: 55.1, name: "Foodtruck 31 (Morado)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 31 - Parte B." },
-
-    // FT 32 (st16: Verde Menta)
-    { id: "stand-32", x: 374.7, y: 2125.6, width: 39.5, height: 60, name: "Foodtruck 32 (Verde Menta)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 32 - Color Verde Menta." },
-
-    // FT 33 (st7: Fucsia/Magenta)
-    { id: "stand-33", x: 374.4, y: 1748.9, width: 39.9, height: 117.8, name: "Foodtruck 33 (Fucsia/Magenta)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 33 - Color Fucsia/Magenta." },
-
-    // FT 34 (st2: Cian/Azul Claro)
-    { id: "stand-34", x: 374.4, y: 2000.8, width: 39.9, height: 117.8, name: "Foodtruck 34 (Cian/Azul Claro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 34 - Color Cian/Azul Claro." },
-
-    // FT 35 (st19: Gris Oscuro)
-    { id: "stand-35a", x: 1412.5, y: 1993.1, width: 58, height: 58, name: "Foodtruck 35 (Gris Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 35 - Parte A." },
-    { id: "stand-35b", x: 1412.5, y: 2058.1, width: 39.9, height: 137.3, name: "Foodtruck 35 (Gris Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 35 - Parte B." },
-
-    // FT 36 (st1: Verde Oliva)
-    { id: "stand-36a", x: 1412.5, y: 1686.3, width: 58, height: 58, name: "Foodtruck 36 (Verde Oliva)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 36 - Parte A." },
-    { id: "stand-36b", x: 1412.5, y: 1751.3, width: 39.9, height: 117.9, name: "Foodtruck 36 (Verde Oliva)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 36 - Parte B." },
-
-    // FT 37 (st6: Lila)
-    { id: "stand-37", x: 1412.5, y: 1494.1, width: 58, height: 58, name: "Foodtruck 37 (Lila)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 37 - Color Lila." },
-
-    // FT 38 (st17: Marrón Oscuro)
-    { id: "stand-38a", x: 1412.5, y: 1621.3, width: 58, height: 58, name: "Foodtruck 38 (Marrón Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 38 - Parte A." },
-    { id: "stand-38b", x: 1412.5, y: 1559.1, width: 39.9, height: 55.2, name: "Foodtruck 38 (Marrón Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 38 - Parte B." },
-
-    // FT 39 (st0: Rojo)
-    { id: "stand-39", x: 1412.5, y: 1876.2, width: 39.9, height: 109.9, name: "Foodtruck 39 (Rojo)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 39 - Color Rojo." },
-
-    // FT 40 (st8: Verde Brillante)
-    { id: "stand-40a", x: 544.4, y: 2218.3, width: 58, height: 58, name: "Foodtruck 40 (Verde Brillante)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 40 - Parte A." },
-    { id: "stand-40b", x: 419.6, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 40 (Verde Brillante)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 40 - Parte B." },
-
-    // FT 41 (st14: Ciruela Oscuro)
-    { id: "stand-41a", x: 1005.3, y: 2218.3, width: 58, height: 58, name: "Foodtruck 41 (Ciruela Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 41 - Parte A." },
-    { id: "stand-41b", x: 943, y: 2218.3, width: 55.3, height: 38.4, name: "Foodtruck 41 (Ciruela Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 41 - Parte B." },
-
-    // FT 42 (st12: Naranja Cítrico)
-    { id: "stand-42", x: 1193.6, y: 2218.3, width: 78, height: 58, name: "Foodtruck 42 (Naranja Cítrico)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 42 - Color Naranja Cítrico." },
-
-    // FT 43 (st10: Azul Pizarra)
-    { id: "stand-43", x: 734.2, y: 2218.3, width: 78.5, height: 58, name: "Foodtruck 43 (Azul Pizarra)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 43 - Color Azul Pizarra." },
-
-    // FT 44 (st18: Verde Pálido)
-    { id: "stand-44", x: 819.7, y: 2218.3, width: 116.3, height: 58, name: "Foodtruck 44 (Verde Pálido)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 44 - Color Verde Pálido." },
-
-    // FT 45 (st5: Amarillo Limón)
-    { id: "stand-45", x: 1070.3, y: 2218.3, width: 116.3, height: 58, name: "Foodtruck 45 (Amarillo Limón)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 45 - Color Amarillo Limón." },
-
-    // FT 46 (st13: Verde Bosque)
-    { id: "stand-46", x: 609.4, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 46 (Verde Bosque)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 46 - Color Verde Bosque." },
-
-    // FT 47 (st4: Naranja Oscuro)
-    { id: "stand-47", x: 1278.6, y: 2218.3, width: 117.8, height: 39.9, name: "Foodtruck 47 (Naranja Oscuro)", flag: "https://flagcdn.com/w80/zz.png", info: "Foodtruck 47 - Color Naranja Oscuro." },];
-
-
-// =======================================================
-// DATOS DE LOS SERVICIOS (separados)
-// =======================================================
+// Nota: Dejé estos con nombres por defecto ya que no parecen venir del TSV.
 const serviceAreasData = [
   { id: "mercadito-productores", x: 1644.7, y: 600.3, width: 1516.2, height: 205.4, name: "Mercadito de Productores", flag: "", info: "" },
   { id: "banos", x: 1642.4, y: 78.1, width: 647.1, height: 54, name: "Baños", flag: "", info: "" },
@@ -183,6 +188,69 @@ const serviceAreasData = [
   { id: "ambulancia-2", x: 1518, y: 2058.1, width: 136.5, height: 55.9, name: "Ambulancia", flag: "", info: "" },
 ];
 
+// =======================================================
+// CARGA DE DATOS DESDE GOOGLE SHEETS (MODIFICADA)
+// =======================================================
+async function loadSpreadsheetData() {
+  const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiWSwNDyZPZGbzv_XDKfajzO7PBxzls54GoIb9umOKYlqZ5BG6LwdRMX7ZH76hSTN0dFWRfA_OmNr/pub?output=tsv';
+  
+  try {
+    console.log('INFO: Cargando datos del spreadsheet...');
+    const response = await fetch(TSV_URL);
+    const tsvText = await response.text();
+    
+    // Parsear TSV
+    const lines = tsvText.trim().split('\n');
+    const headers = lines[0].split('\t');
+    
+    // Crear mapa de datos desde el spreadsheet
+    const spreadsheetData = {};
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split('\t');
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header.trim()] = values[index] ? values[index].trim() : '';
+      });
+      
+      // Usar el ID como clave
+      if (row.id) {
+        spreadsheetData[row.id] = row;
+      }
+    }
+    
+    console.log('INFO: Datos cargados:', Object.keys(spreadsheetData).length, 'registros');
+    
+    // Combinar datos de posición con datos del spreadsheet
+    interactiveAreasData = standsBaseData.map(stand => {
+      const sheetData = spreadsheetData[stand.id] || {};
+      
+      // *** CAMBIO CLAVE: Usa sheetData.code para generar la URL ***
+      const flagCode = sheetData.code || sheetData.flag || ''; 
+      const flagUrl = getFlagUrl(flagCode); 
+
+      return {
+        ...stand,
+        name: sheetData.name || stand.id,
+        flag: flagUrl, // Ahora contiene la URL generada
+        info: sheetData.info || 'Información no disponible',
+        menu: sheetData.menu ? sheetData.menu.split('|').map(item => item.trim()) : []
+      };
+    });
+    
+    console.log('INFO: Datos combinados correctamente');
+    return true;
+  } catch (error) {
+    console.error('ERROR: No se pudieron cargar los datos del spreadsheet:', error);
+    // Si falla, usar datos base con valores por defecto
+    interactiveAreasData = standsBaseData.map(stand => ({
+      ...stand,
+      name: stand.id,
+      flag: '',
+      info: 'Información no disponible'
+    }));
+    return false;
+  }
+}
 
 // =======================================================
 // FUNCIONES
@@ -191,7 +259,6 @@ function applyTransform() {
   container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
   updateTextVisibility();
 
-  // Escala el tooltip de forma inversa al zoom para que mantenga un tamaño legible
   if (tooltip) {
     tooltip.style.transform = `scale(${1 / zoomLevel})`;
   }
@@ -283,19 +350,16 @@ function showTooltip(area, areaElement, pinned = false) {
 
   container.appendChild(tooltip);
 
-  // Espera un tick para que se calcule el ancho del tooltip
   requestAnimationFrame(() => {
     const tooltipWidth = tooltip.offsetWidth;
     const tooltipHeight = tooltip.offsetHeight;
 
-    // Centrar horizontalmente y colocar sobre el borde superior
     const tooltipX = area.x + area.width / 2 - tooltipWidth / 2;
-    const tooltipY = area.y - tooltipHeight - 8; // 8px de separación
+    const tooltipY = area.y - tooltipHeight - 8;
 
     tooltip.style.left = `${tooltipX}px`;
     tooltip.style.top = `${tooltipY}px`;
 
-    // Ajusta tamaño proporcional al zoom
     tooltip.style.transform = `scale(${1 / zoomLevel})`;
 
     tooltip.classList.add('show');
@@ -303,11 +367,10 @@ function showTooltip(area, areaElement, pinned = false) {
     if (pinned) {
       tooltipTimeout = setTimeout(() => {
         hideTooltip();
-      }, 3000); // 3 segundos
+      }, 3000);
     }
   });
 }
-
 
 function hideTooltip() {
   if (tooltipTimeout) {
@@ -337,7 +400,7 @@ function createInteractiveArea(area) {
 
   const flagImg = document.createElement('img');
   flagImg.src = area.flag;
-  flagImg.alt = `Bandera de ${area.name}`;
+  flagImg.alt = ` ${area.name}`;
   flagImg.className = 'stand-flag';
   flagImg.loading = 'lazy';
 
@@ -350,22 +413,17 @@ function createInteractiveArea(area) {
 
   container.appendChild(areaElement);
 
-  // Lógica de eventos para stands y servicios
   if (isService) {
-    // Evento para mouseenter (PC)
     areaElement.addEventListener('mouseenter', () => {
       showTooltip(area, areaElement);
     });
-    // Evento para mouseleave (PC)
     areaElement.addEventListener('mouseleave', () => {
       hideTooltip();
     });
-    // Evento para clic (PC)
     areaElement.addEventListener('click', (e) => {
       e.stopPropagation();
       showTooltip(area, areaElement, true);
     });
-    // Evento para touchstart (Móviles)
     areaElement.addEventListener('touchstart', (e) => {
       e.stopPropagation();
       showTooltip(area, areaElement, true);
@@ -373,7 +431,6 @@ function createInteractiveArea(area) {
       passive: false
     });
   } else {
-    // Para stands, abrir modal
     areaElement.addEventListener('click', (e) => {
       e.stopPropagation();
       showModal(area);
@@ -381,9 +438,7 @@ function createInteractiveArea(area) {
   }
 }
 
-
 function showModal(area) {
-  // Actualiza contenido
   modalTitle.textContent = area.name;
   modalFlag.src = area.flag;
   modalFlag.alt = `Bandera de ${area.name}`;
@@ -401,23 +456,18 @@ function showModal(area) {
     });
   }
 
-  // Muestra el modal
   modal.classList.add('show');
-  modal.style.display = 'flex'; // asegura que esté visible
+  modal.style.display = 'flex';
 }
 
 function hideModal() {
   modal.classList.remove('show');
-  // No necesitamos listener de transitionend
 }
-
-
 
 // =======================================================
 // GESTIÓN DE EVENTOS
 // =======================================================
 
-// Event listeners para botones de control
 zoomInBtn.addEventListener('click', () => {
   const oldZoomLevel = zoomLevel;
   const oldPanX = panX;
@@ -432,9 +482,7 @@ zoomInBtn.addEventListener('click', () => {
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
-  hideTooltip(); // Oculta el tooltip al hacer zoom
-
-  
+  hideTooltip();
 });
 
 zoomOutBtn.addEventListener('click', () => {
@@ -451,7 +499,7 @@ zoomOutBtn.addEventListener('click', () => {
   const targetPanX = centerX - mapX * targetZoom;
   const targetPanY = centerY - mapY * targetZoom;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, targetZoom, targetPanX, targetPanY, 350);
-  hideTooltip(); // Oculta el tooltip al hacer zoom
+  hideTooltip();
 });
 
 resetViewBtn.addEventListener('click', () => {
@@ -464,9 +512,8 @@ resetViewBtn.addEventListener('click', () => {
   const oldPanX = panX;
   const oldPanY = panY;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
-  hideTooltip(); // Oculta el tooltip al restablecer la vista
+  hideTooltip();
 });
-
 
 if (closeBtn) {
   closeBtn.addEventListener('click', (e) => {
@@ -484,11 +531,9 @@ if (modal) {
   });
 }
 
-
-
 window.onclick = e => { 
   if (e.target === modal) hideModal(); 
-  hideTooltip(); // Oculta el tooltip al hacer clic en cualquier parte de la ventana
+  hideTooltip();
 };
 
 document.addEventListener('keydown', e => { 
@@ -501,10 +546,9 @@ container.addEventListener('dblclick', (e) => {
   const oldPanX = panX;
   const oldPanY = panY;
   animateZoom(oldZoomLevel, oldPanX, oldPanY, initialZoomLevel, initialPanX, initialPanY, 500);
-  hideTooltip(); // Oculta el tooltip al hacer doble clic
+  hideTooltip();
 });
 
-// Event listeners para mouse (PC)
 container.addEventListener('mousedown', (e) => {
   if (e.button === 0) {
     if (isZoomAnimating && animationFrame) {
@@ -554,11 +598,6 @@ container.addEventListener('wheel', (e) => {
   hideTooltip();
 });
 
-// ----------------------------------------------------
-// TOUCH EVENTS (PANEO Y ZOOM)
-// ----------------------------------------------------
-
-// Eventos táctiles para zoom y paneo del mapa (solo en el contenedor interactivo)
 interactiveContainer.addEventListener('touchstart', (e) => {
   touchStartTime = Date.now();
   isMultiTouch = e.touches.length > 1;
@@ -654,7 +693,6 @@ interactiveContainer.addEventListener('touchend', (e) => {
     return;
   }
 
-  // Lógica para detectar el toque simple (tap)
   if (!hasMoved && !isMultiTouch && touchDuration < 500 && e.changedTouches.length === 1) {
     const touch = e.changedTouches[0];
     
@@ -678,10 +716,8 @@ interactiveContainer.addEventListener('touchend', (e) => {
           if (standData) {
               const isService = serviceAreasData.some(service => service.id === standId);
               if (isService) {
-                  // Si es un servicio, muestra el tooltip en el toque
                   showTooltip(standData, standElement, true);
               } else {
-                  // Si es un stand, muestra el modal
                   showModal(standData);
               }
           }
@@ -709,12 +745,18 @@ interactiveContainer.addEventListener('touchend', (e) => {
 // =======================================================
 // INICIALIZACIÓN
 // =======================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Cargar datos del spreadsheet
+    await loadSpreadsheetData();
+    
+    // Crear áreas interactivas con datos combinados
     const allAreasData = interactiveAreasData.concat(serviceAreasData);
     allAreasData.forEach(createInteractiveArea);
+    
     setTimeout(() => {
         setInitialView();
     }, 100);
+    
     if (isMobileDevice()) {
         if (instructionsMobile) instructionsMobile.style.display = 'block';
         if (instructionsPC) instructionsPC.style.display = 'none';
