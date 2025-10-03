@@ -1,154 +1,225 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mapa de Stands Enumerados (Editable y Ajustado)</title>
-  <style>
-    body {
-      background: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    svg {
-      border: 1px solid #ccc;
-      background: white;
-      width: 95vw; /* ocupar casi todo el ancho */
-      height: auto;
-    }
-    .stand {
-      fill: rgba(0, 123, 255, 0.25);
-      stroke: #003366;
-      stroke-width: 1;
-      cursor: pointer;
-      transition: fill 0.2s;
-    }
-    .stand:hover {
-      fill: rgba(255, 165, 0, 0.5);
-    }
-    text {
-      font-family: Arial, sans-serif;
-      font-weight: bold;
-      fill: #000;
-      pointer-events: auto; /* permite clics */
-      user-select: text;
-      text-anchor: middle; /* centrado horizontal */
-      dominant-baseline: middle; /* centrado vertical */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Stands Numerados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+
+        /* Contenedor principal para la simulación del mapa */
+        .map-container {
+            position: relative;
+            width: 1600px; /* Ancho basado en tus coordenadas más grandes */
+            height: 2300px; /* Alto basado en tus coordenadas más grandes */
+            border: 2px dashed #007bff;
+            background-color: #ffffff;
+            margin: 0 auto;
+            transform: scale(0.5); /* Reducir el mapa para que sea visible en la pantalla */
+            transform-origin: top left;
+        }
+
+        /* Estilos base de cada stand */
+        .stand {
+            position: absolute;
+            background-color: rgba(255, 99, 71, 0.7); /* Rojo coral transparente */
+            border: 1px solid #c0392b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 25px;
+            cursor: default;
+            transition: background-color 0.2s;
+        }
+
+        .stand:hover {
+            background-color: rgba(255, 99, 71, 1);
+        }
+        
+        /* Estilos para áreas de servicio */
+        .service-area {
+            background-color: rgba(46, 204, 113, 0.7); /* Verde esmeralda transparente */
+            border: 1px solid #27ae60;
+        }
+        
+        .service-area:hover {
+             background-color: rgba(46, 204, 113, 1);
+        }
+        
+        /* Etiqueta de stand */
+        .stand-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            padding: 2px 5px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 3px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <svg preserveAspectRatio="xMidYMid meet">
-    <!-- JS generará los stands aquí -->
-  </svg>
 
-  <script>
-    // Datos de los stands
-    const stands = [
-      { id: 1, x: 543.6, y: 280.6, w: 117, h: 58 },
-      { id: 2, x: 661.6, y: 280.6, w: 58, h: 58 },
-      { id: 3, x: 720.6, y: 280.6, w: 58, h: 58 },
-      { id: 4, x: 779.6, y: 280.6, w: 58, h: 58 },
-      { id: 5, x: 838.6, y: 280.6, w: 58, h: 58 },
-      { id: 6, x: 897.6, y: 280.6, w: 58, h: 58 },
-      { id: 7, x: 956.6, y: 280.6, w: 58, h: 58 },
-      { id: 8, x: 1015.6, y: 280.6, w: 58, h: 58 },
-      { id: 9, x: 1074.6, y: 280.6, w: 58, h: 58 },
-      { id: 10, x: 1133.6, y: 280.6, w: 58, h: 58 },
-      { id: 11, x: 1192.6, y: 280.6, w: 117, h: 58 },
-      { id: 12, x: 1310.6, y: 339.6, w: 58, h: 58 },
-      { id: 13, x: 1310.6, y: 398.6, w: 58, h: 117 },
-      { id: 14, x: 1310.6, y: 516.6, w: 58, h: 117 },
-      { id: 15, x: 1310.6, y: 1199.6, w: 58, h: 117 },
-      { id: 16, x: 1310.6, y: 845.6, w: 58, h: 117 },
-      { id: 17, x: 1310.6, y: 1081.6, w: 58, h: 58 },
-      { id: 18, x: 1310.6, y: 1140.6, w: 58, h: 58 },
-      { id: 19, x: 1192.6, y: 1317.6, w: 117, h: 58 },
-      { id: 20, x: 1133.6, y: 1317.6, w: 58, h: 58 },
-      { id: 21, x: 1074.6, y: 1317.6, w: 58, h: 58 },
-      { id: 22, x: 356.2, y: 1494.1, w: 58, h: 58 },
-      { id: 23, x: 356.2, y: 1683.9, w: 58, h: 58 },
-      { id: 24, x: 356.2, y: 1935.8, w: 58, h: 58 },
-      { id: 25, x: 374.7, y: 1873.7, w: 39.5, h: 55.1 },
-      { id: 26, x: 374.7, y: 2125.6, w: 39.5, h: 60 },
-      { id: 27, x: 374.4, y: 1559.1, w: 39.9, h: 117.8 },
-      { id: 28, x: 374.4, y: 1748.9, w: 39.9, h: 117.8 },
-      { id: 29, x: 374.4, y: 2000.8, w: 39.9, h: 117.8 },
-      { id: 30, x: 1412.5, y: 1993.1, w: 58, h: 58 },
-      { id: 31, x: 1412.5, y: 1686.3, w: 58, h: 58 },
-      { id: 32, x: 1412.5, y: 1494.1, w: 58, h: 58 },
-      { id: 33, x: 1412.5, y: 1621.3, w: 58, h: 58 },
-      { id: 34, x: 1412.5, y: 2058.1, w: 39.9, h: 137.3 },
-      { id: 35, x: 1412.5, y: 1876.2, w: 39.9, h: 109.9 },
-      { id: 36, x: 1412.5, y: 1751.3, w: 39.9, h: 117.9 },
-      { id: 37, x: 1412.5, y: 1559.1, w: 39.9, h: 55.2 },
-      { id: 38, x: 544.4, y: 2218.3, w: 58, h: 58 },
-      { id: 39, x: 1005.3, y: 2218.3, w: 58, h: 58 },
-      { id: 40, x: 1193.6, y: 2218.3, w: 78, h: 58 },
-      { id: 41, x: 734.2, y: 2218.3, w: 78.5, h: 58 },
-      { id: 42, x: 819.7, y: 2218.3, w: 116.3, h: 58 },
-      { id: 43, x: 1070.3, y: 2218.3, w: 116.3, h: 58 },
-      { id: 44, x: 943, y: 2218.3, w: 55.3, h: 38.4 },
-      { id: 45, x: 419.6, y: 2218.3, w: 117.8, h: 39.9 },
-      { id: 46, x: 609.4, y: 2218.3, w: 117.8, h: 39.9 },
-      { id: 47, x: 1278.6, y: 2218.3, w: 117.8, h: 39.9 },
-      { id: 48, x: 661.6, y: 1317.6, w: 117, h: 58 },
-      { id: 49, x: 602.6, y: 1317.6, w: 58, h: 58 },
-      { id: 50, x: 485.9, y: 1317.6, w: 115.7, h: 58 },
-      { id: 51, x: 968.1, y: 827.9, w: 58, h: 58 },
-      { id: 52, x: 968.1, y: 768.9, w: 58, h: 58 },
-      { id: 53, x: 850.1, y: 827.9, w: 117, h: 58 },
-      { id: 54, x: 850.1, y: 768.9, w: 117, h: 58 }
-    ];
+    <h1>Visualización de Stands y Servicios (Escala 50%)</h1>
+    <p style="text-align: center;">El mapa está reducido al 50% (`transform: scale(0.5)`) para encajar en la ventana. Los números son los ID de los stands.</p>
+    
+    <div class="map-container" id="mapContainer">
+        </div>
 
-    const svg = document.querySelector("svg");
+    <script>
+        // =======================================================
+        // DATOS DE LOS STANDS (Solo posiciones y dimensiones - ACTUALIZADO)
+        // =======================================================
+// =======================================================
+// DATOS DE LOS STANDS (Disposición Final, Ordenados y Secuenciales)
+// =======================================================
+// =======================================================
+// DATOS DE LOS STANDS (FINAL - Coordenadas del 29 al 47 Actualizadas)
+// =======================================================
+const standsBaseData = [
+    // Primera Fila (Horizontal - ID 1 a 11)
+    { id: "stand-1", x: 602.7, y: 280.6, width: 117, height: 58 },
+    { id: "stand-2", x: 720.6, y: 280.6, width: 58, height: 58 },
+    // stand-3 es un servicio (Enfermería)
+    { id: "stand-4", x: 779.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-5", x: 838.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-6", x: 897.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-7", x: 956.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-8", x: 1015.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-9", x: 1074.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-10", x: 1133.6, y: 280.6, width: 58, height: 58 },
+    { id: "stand-11", x: 1192.6, y: 280.6, width: 117, height: 58 },
 
-    // Calcular límites totales para ajustar el viewBox
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    // Stands del Lado Derecho Superior (Vertical - ID 12 a 14)
+    { id: "stand-12", x: 1310.6, y: 339.6, width: 58, height: 58 },
+    { id: "stand-13", x: 1310.6, y: 398.6, width: 58, height: 117 },
+    { id: "stand-14", x: 1310.6, y: 516.6, width: 58, height: 117 },
 
-    stands.forEach(s => {
-      minX = Math.min(minX, s.x);
-      minY = Math.min(minY, s.y);
-      maxX = Math.max(maxX, s.x + s.w);
-      maxY = Math.max(maxY, s.y + s.h);
-    });
+    // Stands del Lado Derecho Medio (Vertical - ID 15 a 18)
+    { id: "stand-15", x: 1310.6, y: 846.8, width: 58, height: 233.8 },
+    { id: "stand-16", x: 1310.6, y: 1081.6, width: 58, height: 58 },
+    { id: "stand-17", x: 1310.6, y: 1140.6, width: 58, height: 58 },
+    { id: "stand-18", x: 1310.6, y: 1199.6, width: 58, height: 117 },
 
-    // Añadir un margen de 5%
-    const margin = 50;
-    const width = maxX - minX + margin * 2;
-    const height = maxY - minY + margin * 2;
+    // Fila Inferior Media/Izquierda (Horizontal - ID 19 a 25)
+    { id: "stand-19", x: 1192.6, y: 1317.6, width: 117, height: 58 },
+    { id: "stand-20", x: 1133.6, y: 1317.6, width: 58, height: 58 },
+    { id: "stand-21", x: 1074.6, y: 1317.6, width: 58, height: 58 },
+    { id: "stand-22", x: 661.6, y: 1317.6, width: 117, height: 58 },
+    { id: "stand-23", x: 602.6, y: 1317.6, width: 58, height: 58 },
+    { id: "stand-24", x: 543.6, y: 1317.6, width: 58, height: 58 },
+    { id: "stand-25", x: 484.6, y: 1317.6, width: 58, height: 58 },
 
-    svg.setAttribute("viewBox", `${minX - margin} ${minY - margin} ${width} ${height}`);
+    // Stands Centrales y de Pasillo Superior (ID 26 a 29)
+    { id: "stand-26", x: 980.7, y: 768.6, width: 58, height: 58 },
+    { id: "stand-27", x: 921.7, y: 768.6, width: 58, height: 58 },
+    { id: "stand-28", x: 921.7, y: 827.9, width: 117, height: 58 },
+    { id: "stand-29", x: 960.5, y: 506.8, width: 117, height: 58 },
 
-    // Dibujar los stands
-    stands.forEach(s => {
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", s.x);
-      rect.setAttribute("y", s.y);
-      rect.setAttribute("width", s.w);
-      rect.setAttribute("height", s.h);
-      rect.classList.add("stand");
-      svg.appendChild(rect);
+    // 🔄 Stands del Lado Izquierdo (Vertical - ID 30 a 35) - ¡Nuevas Coordenadas aplicadas!
+    { id: "stand-30", x: 401.1, y: 1524.7, width: 58, height: 58 }, // Anteriormente 29
+    { id: "stand-31", x: 401.1, y: 1590.8, width: 58, height: 165.7 }, // Anteriormente 30
+    { id: "stand-32", x: 401.1, y: 1764.7, width: 58.1, height: 117.8 }, // Anteriormente 31 (Rect class st6)
+    { id: "stand-33", x: 401.1, y: 1890.6, width: 58, height: 110.7 }, // Anteriormente 32 (Rect class st9)
+    { id: "stand-34", x: 401.1, y: 2009.4, width: 58.1, height: 117.8 }, // Anteriormente 33 (Rect class st2)
+    { id: "stand-35", x: 401.5, y: 2135.4, width: 57.5, height: 60 }, // Anteriormente 34
 
-      const fontSize = Math.min(s.w, s.h) * 0.6;
+    // 🔄 Stands de la Fila Inferior (Horizontal - ID 36 a 41) - ¡Nuevas Coordenadas aplicadas!
+    { id: "stand-36", x: 474.7, y: 2221.4, width: 181.7, height: 58 }, // Anteriormente 35 (Rect class st7)
+    { id: "stand-37", x: 672.2, y: 2221.4, width: 121.6, height: 58 }, // Anteriormente 36 (Rect class st12)
+    { id: "stand-38", x: 809.7, y: 2221.4, width: 141, height: 58 }, // Anteriormente 37 (Rect class st16)
+    { id: "stand-39", x: 966.6, y: 2221.4, width: 78.5, height: 58 }, // Anteriormente 38 (Rect class st11)
+    { id: "stand-40", x: 1060.9, y: 2221.4, width: 78.5, height: 58 }, // Anteriormente 39 (Rect class st4)
+    { id: "stand-41", x: 1155.2, y: 2221.4, width: 201.4, height: 58 }, // Anteriormente 40 (Rect class st10)
 
-      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", s.x + s.w / 2);
-      text.setAttribute("y", s.y + s.h / 2);
-      text.setAttribute("font-size", fontSize);
-      text.setAttribute("contenteditable", "true");
-      text.textContent = s.id;
-      text.setAttribute("contenteditable", true);
-      text.setAttribute("spellcheck", false);
-      text.style.cursor = "text";
-      text.style.userSelect = "text";
-      text.style.whiteSpace = "pre";
-      text.setAttribute("xml:space", "preserve");
+    // 🔄 Stands del Lado Derecho Inferior (Vertical - ID 42 a 46) - ¡Nuevas Coordenadas aplicadas!
+    { id: "stand-42", x: 1372.3, y: 2058.1, width: 58, height: 137.3 }, // Anteriormente 41 (Rect class st17)
+    { id: "stand-43", x: 1372.3, y: 1931.7, width: 58, height: 109.9 }, // Anteriormente 42 (Rect class st0)
+    { id: "stand-44", x: 1372.3, y: 1735.8, width: 58, height: 179.4 }, // Anteriormente 43 (Rect class st1)
+    { id: "stand-45", x: 1372.3, y: 1599.1, width: 58, height: 120.2 }, // Anteriormente 44 (Rect class st15)
+    { id: "stand-46", x: 1372.3, y: 1524.7, width: 58, height: 58 }, // Anteriormente 45 (Rect class st5)
 
-      svg.appendChild(text);
-    });
-  </script>
+    // Stand de Pasillo (ID 47)
+    { id: "stand-47", x: 510.6, y: 899.3, width: 29.7, height: 73.2 },
+];
+
+        // =======================================================
+        // DATOS DE LOS SERVICIOS (Solo coordenadas y nombres por defecto - ACTUALIZADO)
+        // =======================================================
+        const serviceAreasData = [
+            { id: "mercadito-productores", x: 1644.7, y: 600.3, width: 1516.2, height: 205.4, name: "Mercadito de Productores", flag: "", info: "" },
+            { id: "banos", x: 1642.4, y: 78.1, width: 647.1, height: 54, name: "Baños", flag: "", info: "" },
+            { id: "escenario-gastronomico", x: 401.1, y: 1022.9, width: 93.1, height: 205.2, name: "Escenario Gastronómico", flag: "", info: "" },
+            { id: "patio-fuegos", x: 637, y: 1870, width: 557.4, height: 75.5, name: "Patio de Fuegos", flag: "", info: "" },
+            { id: "bomberos-1", x: 83.4, y: 218.4, width: 136.5, height: 55.9, name: "Bomberos", flag: "", info: "" },
+            { id: "bomberos-2", x: 1518, y: 2126.6, width: 136.5, height: 55.9, name: "Bomberos", flag: "", info: "" },
+            // ENFERMERÍA: Ubicado en la posición del antiguo stand-3
+            { id: "enfermeria", x: 491.5, y: 238.7, width: 58, height: 58, name: "Enfermería", flag: "", info: "Puesto de primeros auxilios y enfermería." },
+            { id: "escenario-cultural", x: 401.1, y: 399.8, width: 121.5, height: 269, name: "Escenario Cultural", flag: "", info: "" },
+            // POLICÍA: Ubicado en la posición de la antigua enfermería
+            { id: "policia", x: 1529.6, y: 1096.2, width: 61.6, height: 61.6, name: "Policía", flag: "", info: "Puesto de Policía / Seguridad" },
+            { id: "entrada-foodtrucks", x: 836.4, y: 1433.5, width: 158.6, height: 22.1, name: "Entrada Foodtrucks y Patio de Fuegos", flag: "", info: "" },
+            { id: "entrada-1", x: 1420.9, y: 652, width: 18.8, height: 177.2, name: "Entrada", flag: "", info: "" },
+            { id: "entrada-2", x: 3550.6, y: 667.6, width: 29.6, height: 134.5, name: "Entrada", flag: "", info: "" },
+            { id: "ambulancia-1", x: 83.4, y: 149.9, width: 136.5, height: 55.9, name: "Ambulancia", flag: "", info: "" },
+            { id: "ambulancia-2", x: 1518, y: 2058.1, width: 136.5, height: 55.9, name: "Ambulancia", flag: "", info: "" },
+        ];
+
+
+        // Función para crear y agregar los elementos al DOM
+        function renderStands() {
+            const container = document.getElementById('mapContainer');
+            
+            // 1. Renderizar Stands
+            standsBaseData.forEach(stand => {
+                const element = document.createElement('div');
+                element.classList.add('stand');
+                element.id = stand.id;
+                element.style.left = `${stand.x}px`;
+                element.style.top = `${stand.y}px`;
+                element.style.width = `${stand.width}px`;
+                element.style.height = `${stand.height}px`;
+
+                const label = document.createElement('span');
+                label.classList.add('stand-label');
+                label.textContent = stand.id.replace('stand-', ''); // Muestra solo el número/letra
+                element.appendChild(label);
+                
+                container.appendChild(element);
+            });
+
+            // 2. Renderizar Servicios
+            serviceAreasData.forEach(service => {
+                const element = document.createElement('div');
+                element.classList.add('stand', 'service-area');
+                element.id = service.id;
+                element.style.left = `${service.x}px`;
+                element.style.top = `${service.y}px`;
+                element.style.width = `${service.width}px`;
+                element.style.height = `${service.height}px`;
+
+                const label = document.createElement('span');
+                label.classList.add('stand-label');
+                // Para los servicios, muestra el nombre corto
+                label.textContent = service.name.split(' ')[0]; 
+                element.appendChild(label);
+                
+                container.appendChild(element);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', renderStands);
+    </script>
 </body>
 </html>
